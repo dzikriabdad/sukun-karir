@@ -51,7 +51,7 @@ class LowonganController extends Controller
         return view('careers', compact('lowongans', 'categories', 'experiences'));
     }
 
-   public function show($identifier)
+    public function show($identifier)
     {
         $lowongan = Lowongan::with('category')->where('slug', $identifier)->first();
 
@@ -64,23 +64,30 @@ class LowonganController extends Controller
         }
 
         // =========================================================================
-        // LOGIKA FINAL: Cek apakah user punya lamaran yg SEDANG DIPROSES
+        // LOGIKA FINAL: Cek Status Spesifik Pelamar (Diproses / Ditolak)
         // =========================================================================
         $hasActiveApplication = false;
+        $isRejected = false; // <-- LOGIKA SAKTI RE-APPLY
         
         if (Auth::check() && Auth::user()->role !== 'admin') {
-            // Blokir HANYA JIKA statusnya BUKAN rejected. 
-            // Kalau udah 'rejected', ini jadi false, dan tombol Lamar NYALA LAGI!
-            $hasActiveApplication = Application::where('user_id', Auth::id())
+            $lamaran = Application::where('user_id', Auth::id())
                 ->where('lowongan_id', $lowongan->id)
-                ->where('status', '!=', 'rejected') 
-                ->exists();
+                ->first();
+
+            if ($lamaran) {
+                // Sesuaikan 'Tolak Lamaran' dengan value yang ada di dropdown Admin lu
+                if ($lamaran->status === 'rejected' || $lamaran->status === 'Tolak Lamaran') {
+                    $isRejected = true; // Kalau ditolak, tombolnya nyala + tulisan "Lamar Ulang"
+                } else {
+                    $hasActiveApplication = true; // Kalau masih diproses, tombol mati
+                }
+            }
         }
         
         if (request()->is('dashboard/*') || request()->is('lowongan/*')) {
-            return view('pelamar.show_loker', compact('lowongan', 'hasActiveApplication'));
+            return view('pelamar.show_loker', compact('lowongan', 'hasActiveApplication', 'isRejected'));
         }
 
-        return view('detail-career', compact('lowongan', 'hasActiveApplication'));
+        return view('detail-career', compact('lowongan', 'hasActiveApplication', 'isRejected'));
     }
 }

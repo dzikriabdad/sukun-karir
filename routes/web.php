@@ -83,16 +83,23 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/category', [AdminController::class, 'storeCategory'])->name('category.store');
             Route::post('/experience', [AdminController::class, 'storeExperience'])->name('experience.store');
             
-            // --- INI RUTE DELETE YANG BARU DITAMBAHKAN ---
             Route::delete('/category/{id}', [AdminController::class, 'destroyCategory'])->name('category.destroy');
             Route::delete('/experience/{id}', [AdminController::class, 'destroyExperience'])->name('experience.destroy');
         });
+
+        // ==========================================
+        // MANAJEMEN ADMIN (SUDAH AMAN DI DALAM GRUP ADMIN)
+        // ==========================================
+        Route::get('/users/admin', [AdminController::class, 'indexAdmin'])->name('admin.users.index');
+        Route::post('/users/admin', [AdminController::class, 'storeAdmin'])->name('admin.users.store');
+        Route::delete('/users/admin/{id}', [AdminController::class, 'destroyAdmin'])->name('admin.users.destroy');
     });
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
-// Manajemen Admin
-Route::get('/users/admin', [App\Http\Controllers\AdminController::class, 'indexAdmin'])->name('admin.users.index');
-Route::post('/users/admin', [App\Http\Controllers\AdminController::class, 'storeAdmin'])->name('admin.users.store');
-Route::delete('/users/admin/{id}', [App\Http\Controllers\AdminController::class, 'destroyAdmin'])->name('admin.users.destroy');
+// Fitur Lupa Password
+    Route::get('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'requestForm'])->name('password.request');
+    Route::post('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'sendResetLink'])->name('password.email');
+    Route::get('/reset-password/{token}', [App\Http\Controllers\PasswordResetController::class, 'resetForm'])->name('password.reset');
+    Route::post('/reset-password', [App\Http\Controllers\PasswordResetController::class, 'updatePassword'])->name('password.update');

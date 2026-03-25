@@ -22,11 +22,9 @@ class ApplicationController extends Controller
         return view('pelamar.apply', compact('lowongan'));
     }
 
-    // 2. Memproses data lamaran (Versi Gabungan & Aman)
+    // 2. Memproses data lamaran (Versi Anti Duplicate Entry)
     public function store(Request $request, $lowonganId)
     {
-        // PASANG JEBAKAN INI
-        dd('WADUH BANG, DATANYA NYASAR KE SINI! CACHE-NYA BELUM BERSIH!');
         // A. AMBIL DATA LOWONGAN
         $lowongan = Lowongan::findOrFail($lowonganId);
 
@@ -43,17 +41,31 @@ class ApplicationController extends Controller
             return redirect()->route('careers.index')->with('error', 'Maaf, lowongan ini sudah ditutup.');
         }
 
-        // D. CEK DUPLIKASI (Mencegah melamar dua kali di posisi yang sama)
-        $alreadyApplied = Application::where('user_id', Auth::id())
-                                    ->where('lowongan_id', $lowonganId)
-                                    ->exists();
+        // D. CEK RIWAYAT LAMARAN (Anti Duplicate Entry)
+        $existingApplication = Application::where('user_id', Auth::id())
+                                          ->where('lowongan_id', $lowonganId)
+                                          ->first();
 
-        if ($alreadyApplied) {
-            // Pesannya saya sesuaikan agar lebih jelas
-            return redirect()->route('pelamar.dashboard')->with('error', 'Gagal! Kamu sudah pernah melamar di posisi ini. Silakan melamar di posisi pekerjaan lain.');
+        if ($existingApplication) {
+            // Jika sudah pernah melamar dan statusnya "Ditolak", beri Kesempatan Kedua (Update)
+            if ($existingApplication->status === 'rejected') {
+                $existingApplication->update([
+                    'application_reason' => $request->application_reason,
+                    'commitment'         => $request->commitment,
+                    'relocation_ready'   => $request->relocation_ready,
+                    'expected_salary'    => $request->expected_salary,
+                    'status'             => 'screening', // Kembalikan ke tahap awal
+                ]);
+
+                return redirect()->route('pelamar.dashboard')->with('success', 'Lamaran ulang berhasil terkirim! Semoga beruntung di kesempatan kedua ini.');
+            } 
+            // Jika statusnya masih diproses / diterima, tolak lamarannya
+            else {
+                return redirect()->route('pelamar.dashboard')->with('error', 'Gagal! Lamaran kamu untuk posisi ini masih diproses atau sudah diterima.');
+            }
         }
 
-        // E. SIMPAN DATA
+        // E. JIKA BELUM PERNAH MELAMAR SAMA SEKALI, SIMPAN DATA BARU
         Application::create([
             'user_id'            => Auth::id(),
             'lowongan_id'        => $lowonganId,
@@ -61,7 +73,7 @@ class ApplicationController extends Controller
             'commitment'         => $request->commitment,
             'relocation_ready'   => $request->relocation_ready,
             'expected_salary'    => $request->expected_salary,
-            'status'             => 'pending',
+            'status'             => 'screening', // Disamakan dengan sistem funnel HRD
         ]);
 
         // F. REDIRECT KE DASHBOARD PELAMAR

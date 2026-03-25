@@ -103,31 +103,43 @@
                     <a href="{{ route('admin.applications.index') }}" class="w-full block text-center bg-slate-800 text-white font-bold py-4 rounded-xl hover:bg-slate-900 transition shadow-lg uppercase text-sm tracking-wider">
                         Kelola Pelamar Loker Ini
                     </a>
+
                 @elseif($lowongan->status !== 'aktif')
                     {{-- 2. LOKER DITUTUP --}}
                     <button disabled class="w-full text-center bg-red-50 text-red-600 font-bold py-4 px-6 rounded-xl border-2 border-red-200 cursor-not-allowed uppercase tracking-wider text-sm flex items-center justify-center gap-2">
                         <i class="bi bi-x-circle"></i> Lowongan Ditutup
                     </button>
+
+                @elseif(isset($isRejected) && $isRejected)
+                    {{-- 3. PELAMAR PERNAH DITOLAK (RE-APPLY) --}}
+                    <div class="p-3 bg-amber-100 border border-amber-300 rounded-xl text-xs text-amber-800 font-medium text-center">
+                        Lamaran sebelumnya belum lolos. Silakan coba lagi.
+                    </div>
+                    <a href="{{ route('pelamar.apply', $lowongan->id) }}" class="w-full text-center bg-amber-500 text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-amber-500/20 hover:bg-amber-600 hover:-translate-y-0.5 transition-all duration-300 uppercase tracking-wider text-sm">
+                        Lamar Ulang
+                    </a>
+
                 @elseif(isset($hasActiveApplication) && $hasActiveApplication)
-                    {{-- 3. PELAMAR SUDAH DAFTAR & MASIH DIPROSES --}}
+                    {{-- 4. PELAMAR SUDAH DAFTAR & MASIH DIPROSES --}}
                     <button disabled class="w-full text-center bg-green-50 text-green-700 border-2 border-green-200 font-bold py-4 px-6 rounded-xl cursor-not-allowed uppercase tracking-wider text-sm flex items-center justify-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
                         Sedang Diproses
                     </button>
+
                 @else
-                    {{-- 4. BOLEH DAFTAR (Termasuk yang udah di-reject!) --}}
+                    {{-- 5. BOLEH DAFTAR --}}
                     <a href="{{ route('pelamar.apply', $lowongan->id) }}" class="w-full text-center bg-blue-900 text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-blue-900/20 hover:bg-blue-800 hover:-translate-y-0.5 transition-all duration-300 uppercase tracking-wider text-sm">
                         Lamar Sekarang
                     </a>
                 @endif
             @else
-                {{-- 5. GUEST (Belum Login) --}}
+                {{-- 6. GUEST (Belum Login) --}}
                 <a href="/login" class="w-full text-center bg-blue-900 text-white font-bold py-4 px-6 rounded-xl shadow-lg shadow-blue-900/20 hover:bg-blue-800 hover:-translate-y-0.5 transition-all duration-300 uppercase tracking-wider text-sm">
                     Login Untuk Melamar
                 </a>
             @endauth
 
-            <a href="/careers" class="w-full text-center bg-white text-slate-600 font-bold py-4 px-6 rounded-xl border border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition-all duration-300 text-sm">
+            <a href="/careers" class="w-full block text-center mt-2 bg-white text-slate-600 font-bold py-4 px-6 rounded-xl border border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition-all duration-300 text-sm">
                 Kembali ke Daftar Lowongan
             </a>
         </div>
