@@ -12,6 +12,7 @@ class LowonganController extends Controller
 {
     public function index() 
     {
+        // 1. Ambil 3 lowongan terbaru untuk ditampilkan di beranda
         $lowongans = Lowongan::with('category')
             ->where('status', 'aktif') 
             ->whereDate('deadline', '>=', Carbon::today()) 
@@ -19,7 +20,12 @@ class LowonganController extends Controller
             ->take(3)                  
             ->get();
 
-        return view('welcome', compact('lowongans'));
+        // 2. Ambil data master buat ngisi dropdown pencarian di halaman depan biar dinamis
+        $categories = \App\Models\Category::all();
+        $experiences = \App\Models\Experience::all();
+
+        // 3. Lempar datanya ke view welcome
+        return view('welcome', compact('lowongans', 'categories', 'experiences'));
     }
 
     public function allCareers(Request $request)

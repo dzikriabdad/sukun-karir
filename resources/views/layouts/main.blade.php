@@ -15,24 +15,17 @@
 
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        /* Memaksa semua badge/label warna-warni biar teksnya lurus satu baris dan nggak numpuk ke bawah */
-        .bg-green-100, .bg-blue-100, .bg-red-100, .bg-amber-100, .bg-gray-100, .bg-slate-100, .bg-yellow-100, .bg-indigo-100 {
-            white-space: nowrap !important;
-        }
-    </style>
 </head>
 <body class="font-['DM_Sans'] bg-neutral-50">
 
 <nav id="main-navbar" class="fixed start-0 top-0 z-50 w-full border-0 bg-blue-900 transition-all duration-300">
-    <div class="mx-auto flex max-w-screen-lg flex-wrap items-center justify-between px-5 py-4">
+    <div class="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between px-5 py-4">
         
         <a href="/" class="flex items-center">
             <img src="{{ asset('images/sukun.png') }}" class="h-11" alt="Sukun Logo" />
         </a>
 
-        <button data-collapse-toggle="navbar-sticky" type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-lg p-2 text-white hover:bg-white/20 focus:outline-none md:hidden transition-colors" aria-controls="navbar-sticky" aria-expanded="false">
+        <button data-collapse-toggle="navbar-sticky" type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-lg p-2 text-white hover:bg-white/10 focus:outline-none md:hidden transition-colors" aria-controls="navbar-sticky" aria-expanded="false">
             <span class="sr-only">Open main menu</span>
             <svg class="h-5 w-5 burger-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15" />
@@ -70,12 +63,12 @@
                                 
                                 <ul class="py-2 text-sm text-gray-700">
                                     <li>
-                                        <a href="{{ route('admin.lowongan.index') }}" class="flex items-center px-4 py-2.5 hover:bg-blue-50 transition text-blue-900 font-medium">
+                                        <a href="{{ route('admin.lowongan.index') }}" class="flex items-center px-4 py-2.5 hover:bg-blue-50 hover:text-blue-900 transition text-slate-700 font-medium">
                                             Kelola Lowongan
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="{{ route('admin.applications.index') }}" class="flex items-center px-4 py-2.5 hover:bg-blue-50 transition text-blue-900 font-medium">
+                                        <a href="{{ route('admin.applications.index') }}" class="flex items-center px-4 py-2.5 hover:bg-blue-50 hover:text-blue-900 transition text-slate-700 font-medium">
                                             Lamaran Masuk
                                         </a>
                                     </li>
@@ -83,38 +76,38 @@
                                     <li class="border-t border-gray-100 my-1"></li>
                                     
                                     <li>
-                                        <a href="{{ route('admin.master.index') }}" class="flex items-center px-4 py-2.5 hover:bg-blue-50 transition text-blue-900 font-medium">
-                                                Master Data (Kategori/Experience)
+                                        <a href="{{ route('admin.master.index') }}" class="flex items-center px-4 py-2.5 hover:bg-blue-50 hover:text-blue-900 transition text-slate-700 font-medium">
+                                            Master Data (Kategori/Experience)
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-2.5 hover:bg-blue-50 transition text-blue-900 font-medium">
-                                                Kelola Admin
+                                        <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-2.5 hover:bg-blue-50 hover:text-blue-900 transition text-slate-700 font-medium">
+                                            Kelola Admin
                                         </a>
                                     </li>
                                 </ul>
                             @else
-                                <div class="px-4 py-3 text-[10px] text-slate-500 font-bold bg-slate-50 rounded-t-xl uppercase tracking-widest">
+                                <div class="px-4 py-3 text-[10px] text-blue-900 font-bold bg-blue-50 rounded-t-xl uppercase tracking-widest">
                                     Menu Pelamar
                                 </div>
                                 <ul class="py-2 text-sm text-gray-700">
                                     <li>
-                                        <a href="/dashboard" class="flex items-center px-4 py-2.5 hover:bg-gray-100 transition font-medium text-slate-700">
+                                        <a href="/dashboard" class="flex items-center px-4 py-2.5 hover:bg-blue-50 hover:text-blue-900 transition text-slate-700 font-medium">
                                             Dashboard Saya
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="/careers" class="flex items-center px-4 py-2.5 hover:bg-gray-100 transition font-medium text-slate-700">
+                                        <a href="/careers" class="flex items-center px-4 py-2.5 hover:bg-blue-50 hover:text-blue-900 transition text-slate-700 font-medium">
                                             Cari Lowongan
                                         </a>
                                     </li>
                                 </ul>
                             @endif
 
-                            <div class="py-2">
+                            <div class="py-1">
                                 <form action="{{ route('logout') }}" method="POST" onsubmit="return confirm('Yakin ingin keluar?')">
                                     @csrf
-                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 font-medium hover:bg-red-50 transition">
+                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 font-bold hover:bg-red-50 transition">
                                         Logout / Keluar
                                     </button>
                                 </form>
@@ -138,7 +131,7 @@
 </main>
 
 <section id="footer" class="mx-auto bg-blue-900 z-10 relative">
-    <div class="py-20 max-w-screen-lg mx-auto px-5">
+    <div class="py-20 max-w-screen-xl mx-auto px-5">
         <div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-3 gap-10">
             <div class="flex flex-col gap-y-3">
                 <span class="font-bold text-slate-200 text-xl">PT. Sukun Wartono Indonesia</span>

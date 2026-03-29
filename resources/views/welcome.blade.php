@@ -3,153 +3,184 @@
 @section('title', 'Sukun Karir - Beranda')
 
 @section('content')
-    <section class="mx-5 mx-auto mt-20 bg-cover bg-center bg-blue-900 h-[380px] lg:h-[550px]">
-      <div class="max-w-screen-lg mx-auto">
-        <div class="grid grid-cols-1 lg:grid-cols-2 md:grid-cols-2 justify-between items-center pt-[40px] mx-5">
-          <div class="flex flex-col gap-5 justify-center items-center lg:items-start text-center lg:text-left">
-            <h4 class="text-4xl lg:text-5xl md:text-5xl font-bold text-neutral-100 leading-tight">
+    {{-- HERO SECTION FULL WIDTH (Bebas Gap Putih, Mentok Kiri Kanan) --}}
+    <section class="w-full pt-32 pb-20 bg-cover bg-center bg-blue-900 min-h-[450px] lg:min-h-[600px] flex items-center mt-0 relative z-0">
+      <div class="max-w-screen-xl mx-auto w-full px-5 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-2 justify-between items-center w-full gap-10">
+          <div class="flex flex-col gap-6 justify-center items-center lg:items-start text-center lg:text-left relative z-20">
+            <h4 class="text-4xl lg:text-5xl md:text-5xl font-extrabold text-white leading-tight drop-shadow-md">
               Melangkah Bersama, Berkarya untuk Masa Depan
             </h4>
-            <p class="text-neutral-200">
+            <p class="text-blue-100 text-lg md:text-xl font-medium max-w-xl leading-relaxed">
               Temukan semangat berkarya dan berinovasi bersama PT. Sukun Wartono
               Indonesia. Di sini, jadi bagian dari perjalanan hidup yang
               bermakna.
             </p>
           </div>
-          <div class="flex justify-center items-center">
-             <div class="lg:w-[350px] lg:h-[400px] bg-neutral-500/20 rounded-2xl hidden lg:block md:block md:h-[200px] md:w-[175px]"></div>
+          
+          {{-- SLIDER FOTO DINAMIS (.jpeg) --}}
+          <div class="flex justify-center lg:justify-end items-center mt-10 lg:mt-0 relative z-10">
+             <div class="swiper heroSwiper w-full max-w-[380px] h-[300px] lg:h-[450px] rounded-[2rem] hidden md:block border border-white/20 shadow-2xl overflow-hidden group bg-white/5">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide flex items-center justify-center p-4">
+                        <img src="{{ asset('images/fotho1.jpeg') }}" alt="Foto Sukun 1" class="w-full h-full object-cover rounded-[1.5rem]" />
+                    </div>
+                    <div class="swiper-slide flex items-center justify-center p-4">
+                        <img src="{{ asset('images/fotho2.jpeg') }}" alt="Foto Sukun 2" class="w-full h-full object-cover rounded-[1.5rem]" />
+                    </div>
+                    <div class="swiper-slide flex items-center justify-center p-4">
+                        <img src="{{ asset('images/fotho3.jpeg') }}" alt="Foto Sukun 3" class="w-full h-full object-cover rounded-[1.5rem]" />
+                    </div>
+                    <div class="swiper-slide flex items-center justify-center p-4">
+                        <img src="{{ asset('images/fotho4.jpeg') }}" alt="Foto Sukun 4" class="w-full h-full object-cover rounded-[1.5rem]" />
+                    </div>
+                    <div class="swiper-slide flex items-center justify-center p-4">
+                        <img src="{{ asset('images/fotho5.jpeg') }}" alt="Foto Sukun 5" class="w-full h-full object-cover rounded-[1.5rem]" />
+                    </div>
+                    <div class="swiper-slide flex items-center justify-center p-4">
+                        <img src="{{ asset('images/fotho6.jpeg') }}" alt="Foto Sukun 6" class="w-full h-full object-cover rounded-[1.5rem]" />
+                    </div>
+                    <div class="swiper-slide flex items-center justify-center p-4">
+                        <img src="{{ asset('images/fotho7.jpeg') }}" alt="Foto Sukun 7" class="w-full h-full object-cover rounded-[1.5rem]" />
+                    </div>
+                    <div class="swiper-slide flex items-center justify-center p-4">
+                        <img src="{{ asset('images/fotho8.jpeg') }}" alt="Foto Sukun 8" class="w-full h-full object-cover rounded-[1.5rem]" />
+                    </div>
+                </div>
+                
+                {{-- Navigasi Panah --}}
+                <div class="swiper-button-next text-white opacity-0 group-hover:opacity-100 transition-opacity !w-8 !h-8 after:text-xs bg-black/30 rounded-full"></div>
+                <div class="swiper-button-prev text-white opacity-0 group-hover:opacity-100 transition-opacity !w-8 !h-8 after:text-xs bg-black/30 rounded-full"></div>
+                
+                {{-- Pagination Titik --}}
+                <div class="swiper-pagination !bottom-4"></div>
+             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="mx-5 max-w-screen-lg mx-auto -mt-10 relative z-2">
-      <div class="mx-5 bg-neutral-100 rounded-xl px-5 py-5 shadow-lg">
+    {{-- KOTAK PENCARIAN REVISI LABEL --}}
+    <section class="max-w-screen-xl mx-auto px-5 -mt-12 relative z-10">
+      <div class="bg-white rounded-2xl px-6 py-6 shadow-xl border border-gray-100 relative z-30">
         <form action="{{ route('careers.index') }}" method="GET" class="flex flex-col md:flex-row items-center gap-4">
           
-          <select name="kategori" class="w-full md:w-auto rounded-lg border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-            <option value="" disabled selected>Pilih Kategori</option>
-            <option value="Fresh Graduate">Fresh Graduate</option>
-            <option value="Experienced">Experienced</option>
-          </select>
+          {{-- Dropdown Level (Fresh Graduate, Experienced, dll) --}}
+          <div class="w-full md:w-auto flex-1">
+            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1 mb-1 block">Level Pengalaman</label>
+            <select name="kategori" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 font-medium text-slate-700 cursor-pointer">
+              <option value="" selected>Semua Level</option>
+              @foreach($experiences as $exp)
+                  <option value="{{ $exp->name }}">{{ $exp->name }}</option>
+              @endforeach
+            </select>
+          </div>
 
-          <select name="bagian" class="w-full md:w-auto rounded-lg border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-            <option value="" disabled selected>Pilih Bagian</option>
-            <option value="Marketing">Marketing</option>
-            <option value="Produksi">Produksi</option>
-            <option value="IT">IT</option>
-            <option value="HRD">HRD</option>
-            <option value="Keuangan">Keuangan</option>
-          </select>
+          {{-- Dropdown Bidang Pekerjaan (IT, Produksi, dll) --}}
+          <div class="w-full md:w-auto flex-1">
+            <label class="text-[10px] font-bold text-slate-400 uppercase ml-1 mb-1 block">Bidang Pekerjaan</label>
+            <select name="bagian" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 font-medium text-slate-700 cursor-pointer">
+              <option value="" selected>Semua Bidang</option>
+              @foreach($categories as $cat)
+                  <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+              @endforeach
+            </select>
+          </div>
 
-          <input type="text" name="search" placeholder="Cari Lowongan Kerja" class="w-full md:flex-1 rounded-lg border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <div class="w-full md:w-auto flex-[2] lg:mt-5">
+            <input type="text" name="search" placeholder="Cari posisi kerja (contoh: Staff IT)..." class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50" />
+          </div>
 
-          <button type="submit" class="w-full md:w-auto rounded-xl bg-blue-900 px-8 py-3 text-center text-white font-medium hover:bg-blue-800 transition">
+          <button type="submit" class="w-full md:w-auto lg:mt-5 rounded-xl bg-blue-900 px-8 py-3 text-center text-white font-bold hover:bg-blue-800 transition shadow-md hover:shadow-lg">
             Search
           </button>
         </form>
       </div>
+    </section>
 
-      <div class="flex flex-row justify-center items-center mt-10 mx-5">
-        <h1 class="text-2xl font-semibold text-neutral-800">
+    {{-- LOWONGAN TERBARU --}}
+    <section class="max-w-screen-xl mx-auto px-5 mt-16 mb-8 relative z-0">
+      <div class="flex flex-row justify-center lg:justify-start items-center">
+        <h1 class="text-3xl font-extrabold text-blue-900">
           Lowongan Terbaru
         </h1>
       </div>
+    </section>
 
-      <div class="mt-8">
-        <div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-6 max-w-[1000px] mx-auto px-5">
-          @forelse($lowongans as $item)
-          <a href="{{ route('career.detail', $item->id) }}" class="block rounded-lg p-5 shadow-md bg-white hover:bg-neutral-50 hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-blue-100 flex flex-col h-full cursor-pointer">
-            <h2 class="text-lg font-bold text-slate-900 hover:text-blue-900 uppercase">
-              {{ $item->title }}
-            </h2>
-            
-            <div class="mt-2 mb-4 flex gap-1 flex-wrap">
-               <span class="inline-block rounded-full bg-blue-100 px-3 py-1 text-[11px] font-bold text-blue-800 uppercase tracking-wider">
-                {{ $item->category->name ?? 'Semua Kategori' }}
-              </span>
-              <span class="inline-block rounded-full bg-purple-100 px-3 py-1 text-[11px] font-bold text-purple-800 uppercase tracking-wider">
-                {{ $item->experience }}
-              </span>
-            </div>
-            
-            <div class="mt-auto border-t border-gray-100 pt-4">
-                <div class="flex items-center gap-2 text-slate-600 mb-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                 <p class="text-sm">{{ $item->location ?? 'Belum ditentukan' }}</p>
-                </div>
-                
-                <div class="flex items-center gap-2 text-slate-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <p class="text-sm font-medium">
-                     Batas: 
-                     @if($item->deadline)
-                        {{ \Carbon\Carbon::parse($item->deadline)->format('d M Y') }}
-                     @elseif($item->end_date)
-                        {{ \Carbon\Carbon::parse($item->end_date)->format('d M Y') }}
-                     @else
-                        Tidak ada batas
-                     @endif
-                  </p>
-                </div>
-            </div>
-          </a>
-          @empty
-          <div class="col-span-full text-center py-10 bg-white rounded-xl shadow-sm border border-dashed border-gray-200">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-300 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <p class="text-slate-500 font-medium">Belum ada lowongan terbaru saat ini.</p>
+    <section class="mb-10 relative z-0">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-screen-xl mx-auto px-5">
+        @forelse($lowongans as $item)
+        <a href="{{ route('career.detail', $item->id) }}" class="block rounded-[1.5rem] p-6 shadow-sm bg-white hover:bg-blue-50/50 hover:-translate-y-1 transition-all duration-300 border border-gray-100 hover:border-blue-200 flex flex-col h-full cursor-pointer hover:shadow-md">
+          <h2 class="text-xl font-black text-slate-800 hover:text-blue-900 uppercase tracking-tight">
+            {{ $item->title }}
+          </h2>
+          
+          <div class="mt-3 mb-5 flex gap-2 flex-wrap">
+             <span class="inline-block whitespace-nowrap rounded-md bg-blue-100/80 px-3 py-1 text-[10px] font-black text-blue-800 uppercase tracking-widest">
+              {{ $item->category->name ?? 'Semua Kategori' }}
+            </span>
+            <span class="inline-block whitespace-nowrap rounded-md bg-purple-100/80 px-3 py-1 text-[10px] font-black text-purple-800 uppercase tracking-widest">
+              {{ $item->experience }}
+            </span>
           </div>
-          @endforelse
+          
+          <div class="mt-auto border-t border-gray-100 pt-5 space-y-3">
+              <div class="flex items-center gap-3 text-slate-500">
+                <p class="text-sm font-medium whitespace-nowrap">{{ $item->location ?? 'Belum ditentukan' }}</p>
+              </div>
+              <div class="flex items-center gap-3 text-slate-500">
+                <p class="text-sm font-medium whitespace-nowrap">
+                   Batas: {{ $item->deadline ? \Carbon\Carbon::parse($item->deadline)->format('d M Y') : 'Tidak ada batas' }}
+                </p>
+              </div>
+          </div>
+        </a>
+        @empty
+        <div class="col-span-full text-center py-16 bg-white rounded-[2rem] border border-dashed border-gray-200">
+            <p class="text-slate-500 font-bold text-lg">Belum ada lowongan terbaru saat ini.</p>
         </div>
+        @endforelse
       </div>
 
-      <div class="mt-10 flex items-center justify-center">
-        <a href="/careers" class="text-sm font-bold text-blue-900 border-2 border-blue-900 rounded-lg px-6 py-2.5 flex items-center hover:bg-blue-50 transition">
+      <div class="mt-12 flex items-center justify-center">
+        <a href="/careers" class="text-sm font-black text-blue-900 bg-white border-2 border-blue-900 rounded-xl px-8 py-3 flex items-center hover:bg-blue-900 hover:text-white transition shadow-sm uppercase tracking-widest">
           <span>Lihat Semua Lowongan</span>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
         </a>
       </div>
     </section>
 
-    <section class="mt-20 py-10 bg-cover bg-center" style="background-image: url('{{ asset('images/banerskn3.png') }}');">
-      <div class="max-w-screen-lg mx-auto bg-white/95 p-8 rounded-[2.5rem] shadow-sm backdrop-blur-sm mx-5">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-          <div class="flex justify-center h-full">
+    {{-- SECTION TENTANG KAMI (VERSI FULL LENGKAP) --}}
+    <section class="mt-24 py-20 bg-cover bg-center relative z-0" style="background-image: url('{{ asset('images/banerskn3.png') }}');">
+      <div class="max-w-screen-xl mx-auto bg-white/95 p-8 lg:p-12 rounded-[2.5rem] shadow-xl backdrop-blur-md mx-5">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div class="flex justify-center h-full relative">
+            <div class="absolute inset-0 bg-blue-900/10 rounded-[2rem] transform translate-x-4 translate-y-4"></div>
             <img src="{{ asset('images/banerskn.png') }}" alt="Kantor Pusat Sukun" 
-                 class="w-full h-64 lg:h-80 object-cover object-right rounded-[2.5rem] shadow-md border border-gray-100" />
+                 class="w-full h-64 lg:h-96 object-cover object-right rounded-[2rem] shadow-lg border-4 border-white relative z-10" />
           </div>
-          <div class="text-justify">
-            <h1 class="text-3xl font-bold text-blue-900 mb-6">Tentang Kami</h1>
-            <p class="text-sm text-slate-700 leading-relaxed">
-              PT. Sukun Wartono Indonesia didirikan dengan sebuah filosofi yang mempercayai bahwa sumber daya manusia adalah faktor terpenting dalam mengembangkan kemajuan perusahaan...
+          <div class="text-justify relative z-10">
+            <h1 class="text-3xl lg:text-4xl font-extrabold text-blue-900 mb-6 border-b-4 border-amber-400 inline-block pb-2">Tentang Kami</h1>
+            <p class="text-base text-slate-700 leading-relaxed font-medium">
+              PT. Sukun Wartono Indonesia didirikan dengan sebuah filosofi yang mempercayai bahwa sumber daya manusia adalah faktor terpenting dalam mengembangkan kemajuan perusahaan. Hal ini lah yang membuat kami selalu berupaya menciptakan lingkungan kerja yang aman, nyaman, dan produktif bagi seluruh karyawan kami.
             </p>
-            <p class="text-sm mt-4 text-slate-700 leading-relaxed">
-              Pengembangan diri tetap menjadi fokus utama kami seiring dengan perkembangan zaman yang ada...
+            <p class="text-base mt-4 text-slate-700 leading-relaxed font-medium">
+              Pengembangan diri tetap menjadi fokus utama kami seiring dengan perkembangan zaman yang ada. Melalui berbagai program pelatihan dan pengembangan, kami berkomitmen untuk membantu setiap individu mencapai potensi terbaiknya dan tumbuh bersama perusahaan dalam menghadapi tantangan di masa depan.
             </p>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="my-20">
-      <div class="max-w-screen-lg mx-auto px-5">
-        <div class="bg-blue-900 bg-cover bg-center overflow-hidden rounded-2xl p-10 relative shadow-xl" style="background-image: url('https://static.vecteezy.com/system/resources/previews/014/031/972/non_2x/abstract-modern-wave-graphic-background-blue-background-abstract-wave-background-design-dark-poster-blue-background-illustration-vector.jpg');">
-          <div class="absolute inset-0 bg-blue-900/40"></div>
-          
-          <div class="flex flex-col lg:flex-row justify-between items-center gap-5 relative z-10">
-            <h4 class="text-2xl lg:text-3xl font-bold text-white lg:basis-2/3 text-center lg:text-left drop-shadow-md">
+    {{-- BANNER BAWAH --}}
+    <section class="my-24 relative z-0">
+      <div class="max-w-screen-xl mx-auto px-5">
+        <div class="bg-blue-900 bg-cover bg-center overflow-hidden rounded-[2.5rem] p-10 lg:p-16 relative shadow-2xl" style="background-image: url('https://static.vecteezy.com/system/resources/previews/014/031/972/non_2x/abstract-modern-wave-graphic-background-blue-background-abstract-wave-background-design-dark-poster-blue-background-illustration-vector.jpg');">
+          <div class="absolute inset-0 bg-blue-900/60 mix-blend-multiply"></div>
+          <div class="flex flex-col lg:flex-row justify-between items-center gap-8 relative z-10">
+            <h4 class="text-3xl lg:text-4xl font-extrabold text-white lg:basis-2/3 text-center lg:text-left drop-shadow-lg leading-tight">
               Ayo Bergabung dan Bangun Masa Depanmu Bersama Kami!
             </h4>
-            <a href="/careers" class="bg-white text-blue-900 rounded-xl px-8 py-4 font-bold hover:bg-neutral-100 transition whitespace-nowrap shadow-lg hover:-translate-y-1">
+            <a href="/careers" class="bg-amber-400 text-amber-900 rounded-xl px-10 py-5 font-black uppercase tracking-widest hover:bg-amber-300 transition whitespace-nowrap shadow-xl hover:-translate-y-1">
               Temukan Karirmu
             </a>
           </div>
@@ -157,3 +188,41 @@
       </div>
     </section>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (document.querySelector(".heroSwiper")) {
+            // Hancurkan instance lama kalau ada bentrok
+            if (document.querySelector('.heroSwiper').swiper) {
+                document.querySelector('.heroSwiper').swiper.destroy(true, true);
+            }
+
+            const swiper = new Swiper(".heroSwiper", {
+                spaceBetween: 0,
+                effect: "fade",
+                fadeEffect: { 
+                    crossFade: true // BIAR TIDAK BLANK
+                },
+                loop: true,
+                speed: 1000,
+                autoplay: {
+                    delay: 4000, 
+                    disableOnInteraction: false,
+                },
+                observer: true,
+                observeParents: true,
+                watchSlidesProgress: true,
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true,
+                },
+                navigation: { 
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev",
+                },
+            });
+        }
+    });
+</script>
+@endpush

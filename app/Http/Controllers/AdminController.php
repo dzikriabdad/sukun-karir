@@ -6,28 +6,25 @@ use App\Models\Application;
 use App\Models\Lowongan;
 use App\Models\Category;
 use App\Models\Experience;
-use App\Models\User; // <-- Tambahan untuk Manajemen Admin
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Hash; // <-- Tambahan untuk enkripsi password Admin
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
     // ==========================================
-    // 0. DASHBOARD (Statistik Kasar)
+    // 0. DASHBOARD
     // ==========================================
-
     public function dashboard()
     {
         $stats = [
             'total_lowongan'   => Lowongan::count(),
             'aktif_lowongan'   => Lowongan::where('status', 'aktif')->count(),
             'total_pelamar'    => Application::count(),
-            // 'pending' diubah ke 'screening' menyesuaikan tahapan baru
             'pending_pelamar'  => Application::where('status', 'screening')->count(),
-            // 'accepted' diubah ke 'hired' menyesuaikan tahapan baru
             'hired_pelamar'    => Application::where('status', 'hired')->count(),
         ];
 
@@ -37,7 +34,6 @@ class AdminController extends Controller
     // ==========================================
     // 1. MANAJEMEN LOWONGAN (CRUD)
     // ==========================================
-
     public function indexLowongan()
     {
         $lowongans = Lowongan::with('category')->latest()->get();
@@ -163,25 +159,21 @@ class AdminController extends Controller
     }
 
     // ==========================================
-    // 2. MANAJEMEN SELEKSI (RECRUITMENT FUNNEL)
+    // 2. MANAJEMEN SELEKSI
     // ==========================================
-    
     public function indexApplications(Request $request)
     {
         $lowongans = Lowongan::all(); 
         $query = Application::with(['user', 'lowongan']);
 
-        // 1. Filter by Posisi Lowongan
         if ($request->filled('lowongan_id')) {
             $query->where('lowongan_id', $request->lowongan_id);
         }
 
-        // 2. Filter by Status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // 3. Cari by Nama Pelamar
         if ($request->filled('search')) {
             $query->whereHas('user', function($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%');
@@ -189,25 +181,17 @@ class AdminController extends Controller
         }
 
         $applications = $query->latest()->get();
-
         return view('admin.applications.index', compact('applications', 'lowongans'));
     }
 
-    /**
-     * TAMPILKAN DETAIL LAMARAN + RIWAYAT (JEJAK DIGITAL)
-     */
     public function showApplication($id)
     {
-        // 1. Ambil data lamaran utama yang sedang dibuka
         $application = Application::with(['user.cv', 'lowongan'])->findOrFail($id);
-        
-        // 2. LOGIKA RIWAYAT: Ambil semua lamaran LAIN milik user ini
-        // Mengambil posisi lamaran lama dan status akhirnya agar HRD bisa memantau
         $history = Application::where('user_id', $application->user_id)
-                               ->where('id', '!=', $id) // Kecualikan lamaran yang sedang aktif dibuka
-                               ->with('lowongan')
-                               ->latest()
-                               ->get();
+                                ->where('id', '!=', $id)
+                                ->with('lowongan')
+                                ->latest()
+                                ->get();
         
         return view('admin.applications.show', compact('application', 'history'));
     }
@@ -215,11 +199,7 @@ class AdminController extends Controller
     public function updateApplicationStatus(Request $request, $id)
     {
         $application = Application::findOrFail($id);
-        
-        $request->validate([
-            'status' => 'required|string'
-        ]);
-
+        $request->validate(['status' => 'required|string']);
         $application->update(['status' => $request->status]);
         
         return back()->with('success', 'Tahapan seleksi pelamar berhasil diperbarui!');
@@ -228,7 +208,6 @@ class AdminController extends Controller
     // ==========================================
     // 3. MASTER DATA
     // ==========================================
-
     public function indexMaster()
     {
         $categories = Category::all();
@@ -236,17 +215,28 @@ class AdminController extends Controller
         return view('admin.master.index', compact('categories', 'experiences'));
     }
 
-    public function storeCategory(Request $request) 
+    public function storeCategory(Request $request)
     {
-        $request->validate(['name' => 'required|string|max:100']);
-        Category::create(['name' => $request->name]);
-        return back()->with('success', 'Kategori baru berhasil ditambahkan!');
+        $request->validate(['name' => 'required|string|max:255']);
+
+        Category::create([
+            'name' => $request->name,
+            'slug' => Str::slug($request->name), // Otomatis bikin slug
+        ]);
+
+        return back()->with('success', 'Kategori berhasil ditambahkan!');
     }
 
     public function storeExperience(Request $request) 
     {
         $request->validate(['name' => 'required|string|max:100']);
-        Experience::create(['name' => $request->name]);
+
+        // JAGA-JAGA: Kalau tabel Experience juga butuh slug, tambahin di sini Bos!
+        Experience::create([
+            'name' => $request->name,
+            // 'slug' => Str::slug($request->name), // Buka comment ini kalau di DB ada kolom slug
+        ]);
+
         return back()->with('success', 'Level pengalaman baru berhasil ditambahkan!');
     }
 
@@ -265,10 +255,8 @@ class AdminController extends Controller
     // ==========================================
     // 4. MANAJEMEN ADMIN
     // ==========================================
-
     public function indexAdmin()
     {
-        // Mengambil data user yang role-nya 'admin'
         $admins = User::where('role', 'admin')->latest()->get(); 
         return view('admin.users.index', compact('admins'));
     }
@@ -285,7 +273,7 @@ class AdminController extends Controller
             'name'     => $request->name,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
-            'role'     => 'admin', // Sesuaikan jika kamu pakai kolom lain seperti 'is_admin' => 1
+            'role'     => 'admin', 
         ]);
 
         return back()->with('success', 'Akun Admin baru berhasil ditambahkan!');
@@ -295,7 +283,6 @@ class AdminController extends Controller
     {
         $admin = User::findOrFail($id);
         
-        // Proteksi biar admin nggak bisa ngehapus akunnya sendiri pas lagi login
         if ($admin->id == Auth::id()) {
             return back()->with('error', 'Gagal! Kamu tidak bisa menghapus akunmu sendiri.');
         }
