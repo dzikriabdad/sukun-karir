@@ -5,6 +5,7 @@ use App\Http\Controllers\LowonganController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PelamarController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ApplicantDetailController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,12 @@ Route::middleware(['guest'])->group(function () {
     // Auth Admin
     Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
     Route::post('/admin/login', [AuthController::class, 'adminLogin']);
+
+    // Fitur Lupa Password (Dipindah ke sini biar lebih aman)
+    Route::get('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'requestForm'])->name('password.request');
+    Route::post('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'sendResetLink'])->name('password.email');
+    Route::get('/reset-password/{token}', [App\Http\Controllers\PasswordResetController::class, 'resetForm'])->name('password.reset');
+    Route::post('/reset-password', [App\Http\Controllers\PasswordResetController::class, 'updatePassword'])->name('password.update');
 });
 
 /*
@@ -45,14 +52,19 @@ Route::middleware(['auth'])->group(function () {
 
     /* --- A. AREA PELAMAR --- */
     Route::middleware(['pelamar'])->group(function () {
-        // Dashboard & Profil CV
+        // Dashboard & Profil CV bawaan
         Route::get('/dashboard', [PelamarController::class, 'dashboard'])->name('pelamar.dashboard');
         Route::get('/create-cv', [PelamarController::class, 'createCv'])->name('pelamar.create_cv');
         Route::post('/store-cv', [PelamarController::class, 'storeCv'])->name('pelamar.store_cv');
         
-        // Rute untuk Edit CV
+        // Rute untuk Edit CV bawaan
         Route::get('/edit-cv', [PelamarController::class, 'editCv'])->name('pelamar.edit_cv');
         Route::put('/update-cv', [PelamarController::class, 'updateCv'])->name('pelamar.update_cv');
+
+        // ==== RUTE BARU: Isi Biodata & Upload CV Lengkap ====
+        Route::get('/lengkapi-profil', [ApplicantDetailController::class, 'create'])->name('profil.create');
+        Route::post('/lengkapi-profil', [ApplicantDetailController::class, 'store'])->name('profil.store');
+        // ====================================================
 
         // Proses Melamar Kerja
         Route::get('/lowongan/{id}/apply', [PelamarController::class, 'showApplyForm'])->name('pelamar.apply');
@@ -87,9 +99,7 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/experience/{id}', [AdminController::class, 'destroyExperience'])->name('experience.destroy');
         });
 
-        // ==========================================
-        // MANAJEMEN ADMIN (SUDAH AMAN DI DALAM GRUP ADMIN)
-        // ==========================================
+        // MANAJEMEN ADMIN
         Route::get('/users/admin', [AdminController::class, 'indexAdmin'])->name('admin.users.index');
         Route::post('/users/admin', [AdminController::class, 'storeAdmin'])->name('admin.users.store');
         Route::delete('/users/admin/{id}', [AdminController::class, 'destroyAdmin'])->name('admin.users.destroy');
@@ -98,8 +108,3 @@ Route::middleware(['auth'])->group(function () {
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
-// Fitur Lupa Password
-    Route::get('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'requestForm'])->name('password.request');
-    Route::post('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'sendResetLink'])->name('password.email');
-    Route::get('/reset-password/{token}', [App\Http\Controllers\PasswordResetController::class, 'resetForm'])->name('password.reset');
-    Route::post('/reset-password', [App\Http\Controllers\PasswordResetController::class, 'updatePassword'])->name('password.update');

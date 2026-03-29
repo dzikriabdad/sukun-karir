@@ -55,31 +55,31 @@
             {{-- TABEL DAFTAR ADMIN KANAN --}}
             <div class="lg:col-span-2">
                 <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-50 overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                    <div class="overflow-x-auto w-full">
+                        <table class="w-full text-left border-collapse min-w-[500px]">
                             <thead>
                                 <tr class="bg-blue-900 text-white text-[11px] font-black uppercase tracking-[0.15em]">
-                                    <th class="px-8 py-6">Nama Admin</th>
-                                    <th class="px-8 py-6">Email</th>
-                                    <th class="px-8 py-6 text-center">Aksi</th>
+                                    <th class="px-8 py-6 whitespace-nowrap">Nama Admin</th>
+                                    <th class="px-8 py-6 whitespace-nowrap">Email</th>
+                                    <th class="px-8 py-6 text-center whitespace-nowrap">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-50">
                                 @foreach($admins as $admin)
                                 <tr class="hover:bg-blue-50/40 transition">
-                                    <td class="px-8 py-6 font-bold text-slate-800">{{ $admin->name }}</td>
-                                    <td class="px-8 py-6 text-sm text-slate-500">{{ $admin->email }}</td>
+                                    <td class="px-8 py-6 font-bold text-slate-800 whitespace-nowrap">{{ $admin->name }}</td>
+                                    <td class="px-8 py-6 text-sm text-slate-500 whitespace-nowrap">{{ $admin->email }}</td>
                                     <td class="px-8 py-6 text-center">
                                         @if($admin->id !== Auth::id())
                                         <form action="{{ route('admin.users.destroy', $admin->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus admin ini?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-[10px] bg-red-50 hover:bg-red-100 text-red-600 font-black py-2 px-4 rounded-lg transition uppercase tracking-widest">
+                                            <button type="submit" class="inline-block whitespace-nowrap text-[10px] bg-red-50 hover:bg-red-100 text-red-600 font-black py-2 px-4 rounded-lg transition uppercase tracking-widest">
                                                 Hapus
                                             </button>
                                         </form>
                                         @else
-                                        <span class="text-[10px] bg-green-50 text-green-600 font-black py-2 px-4 rounded-lg uppercase tracking-widest">
+                                        <span class="inline-block whitespace-nowrap text-[10px] bg-green-50 text-green-600 font-black py-2 px-4 rounded-lg uppercase tracking-widest">
                                             Sedang Login
                                         </span>
                                         @endif

@@ -35,15 +35,56 @@
                     
                     @if($application->user->cv)
                         <div class="space-y-6">
+                            
+                            {{-- NIK (Diumpetin dulu pakai komentar Blade) --}}
+                            {{-- 
+                            <div>
+                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">NIK / No. KTP</p>
+                                <p class="text-slate-800 font-medium">{{ $application->user->cv->identity_number ?? '-' }}</p>
+                            </div> 
+                            --}}
+
+                            {{-- TTL (Sesuai database: place_of_birth & date_of_birth) --}}
+                            <div>
+                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Tempat, Tanggal Lahir</p>
+                                <p class="text-slate-800 font-medium">
+                                    {{ $application->user->cv->place_of_birth ?? '-' }}, 
+                                    {{ $application->user->cv->date_of_birth ? \Carbon\Carbon::parse($application->user->cv->date_of_birth)->format('d F Y') : '-' }}
+                                </p>
+                            </div>
+
+                            {{-- Alamat Lengkap --}}
+                            <div>
+                                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Alamat Lengkap</p>
+                                <p class="text-slate-800 font-medium">{{ $application->user->cv->address ?? '-' }}</p>
+                            </div>
+
+                            {{-- Gender & Agama (Bersebelahan) --}}
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Jenis Kelamin</p>
+                                    <p class="text-slate-800 font-medium">{{ $application->user->cv->gender ?? '-' }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Agama</p>
+                                    <p class="text-slate-800 font-medium">{{ $application->user->cv->religion ?? '-' }}</p>
+                                </div>
+                            </div>
+
+                            {{-- WA --}}
                             <div>
                                 <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">No. WhatsApp</p>
                                 <p class="text-slate-800 font-medium">+62 {{ $application->user->cv->phone_number }}</p>
                             </div>
+                            
+                            {{-- Pendidikan --}}
                             <div>
                                 <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Pendidikan</p>
                                 <p class="text-slate-800 font-medium text-sm">{{ $application->user->cv->university }}</p>
                                 <p class="text-[11px] text-slate-500">{{ $application->user->cv->major }} (IPK: {{ $application->user->cv->gpa }})</p>
                             </div>
+                            
+                            {{-- Pengalaman --}}
                             <div>
                                 <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Pengalaman Kerja</p>
                                 <p class="text-slate-800 font-medium text-sm whitespace-pre-line leading-relaxed italic">

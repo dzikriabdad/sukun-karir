@@ -15,89 +15,106 @@
 
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Memaksa semua badge/label warna-warni biar teksnya lurus satu baris dan nggak numpuk ke bawah */
+        .bg-green-100, .bg-blue-100, .bg-red-100, .bg-amber-100, .bg-gray-100, .bg-slate-100, .bg-yellow-100, .bg-indigo-100 {
+            white-space: nowrap !important;
+        }
+    </style>
 </head>
 <body class="font-['DM_Sans'] bg-neutral-50">
 
-<nav id="main-navbar" class="fixed start-0 top-0 z-20 w-full border-0 bg-blue-900 transition-all duration-300">
-    <div class="mx-auto flex max-w-screen-lg items-center px-5 py-5">
+<nav id="main-navbar" class="fixed start-0 top-0 z-50 w-full border-0 bg-blue-900 transition-all duration-300">
+    <div class="mx-auto flex max-w-screen-lg flex-wrap items-center justify-between px-5 py-4">
         
         <a href="/" class="flex items-center">
             <img src="{{ asset('images/sukun.png') }}" class="h-11" alt="Sukun Logo" />
         </a>
 
-        <div class="hidden w-full md:flex md:flex-1 md:items-center md:justify-end" id="navbar-sticky">
-            <ul class="flex flex-col md:flex-row md:items-center md:space-x-10 font-medium mt-4 md:mt-0">
+        <button data-collapse-toggle="navbar-sticky" type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-lg p-2 text-white hover:bg-white/20 focus:outline-none md:hidden transition-colors" aria-controls="navbar-sticky" aria-expanded="false">
+            <span class="sr-only">Open main menu</span>
+            <svg class="h-5 w-5 burger-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15" />
+            </svg>
+        </button>
+
+        <div class="hidden w-full md:block md:w-auto" id="navbar-sticky">
+            <ul class="mt-4 flex flex-col rounded-lg bg-blue-900 p-4 font-medium md:mt-0 md:flex-row md:items-center md:space-x-8 md:border-0 md:bg-transparent md:p-0">
                 <li>
-                    <a href="/" class="block py-2 md:p-0">
-                        <span class="text-white transition-colors duration-300">Home</span>
+                    <a href="/" class="block rounded py-2 pl-3 pr-4 md:p-0 hover:bg-white/10 md:hover:bg-transparent">
+                        <span class="text-white transition-colors duration-300 nav-text">Home</span>
                     </a>
                 </li>
                 <li>
-                    <a href="/careers" class="block py-2 md:p-0">
-                        <span class="text-white transition-colors duration-300">Karir</span>
+                    <a href="/careers" class="block rounded py-2 pl-3 pr-4 md:p-0 hover:bg-white/10 md:hover:bg-transparent">
+                        <span class="text-white transition-colors duration-300 nav-text">Karir</span>
                     </a>
                 </li>
                 
                 @auth
                     <li class="relative">
-                        <button id="dropdownNavbarLink" data-dropdown-toggle="dropdownNavbar" class="flex items-center justify-between w-full py-2 px-3 text-white font-bold md:p-0 md:w-auto">
+                        <button id="dropdownNavbarLink" data-dropdown-toggle="dropdownNavbar" class="flex w-full items-center justify-between rounded py-2 pl-3 pr-4 font-bold hover:bg-white/10 md:w-auto md:p-0 md:hover:bg-transparent text-white nav-text">
                             <span>{{ Auth::user()->role === 'admin' ? 'Admin HRD' : Auth::user()->name }}</span>
-                            <svg class="w-2.5 h-2.5 ms-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <svg class="ms-2.5 h-2.5 w-2.5 nav-icon text-white transition-colors duration-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
                             </svg>
                         </button>
 
-                        <div id="dropdownNavbar" class="z-30 hidden font-normal bg-white divide-y divide-gray-100 rounded-xl shadow-xl w-60 mt-2 border border-gray-100">
+                        <div id="dropdownNavbar" class="z-50 hidden w-full font-normal md:w-max md:min-w-[260px] bg-white divide-y divide-gray-100 rounded-xl shadow-xl border border-gray-100 mt-2 md:absolute md:right-0">
                             
                             @if(Auth::user()->role === 'admin')
                                 <div class="px-4 py-3 text-[10px] text-blue-900 font-bold bg-blue-50 rounded-t-xl uppercase tracking-widest">
                                     Panel Kendali HRD
                                 </div>
+                                
                                 <ul class="py-2 text-sm text-gray-700">
                                     <li>
-                                        <a href="{{ route('admin.lowongan.index') }}" class="flex items-center px-4 py-2 hover:bg-blue-50 transition text-blue-900 font-medium">
+                                        <a href="{{ route('admin.lowongan.index') }}" class="flex items-center px-4 py-2.5 hover:bg-blue-50 transition text-blue-900 font-medium">
                                             Kelola Lowongan
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="{{ route('admin.applications.index') }}" class="flex items-center px-4 py-2 hover:bg-blue-50 transition text-blue-900 font-medium">
+                                        <a href="{{ route('admin.applications.index') }}" class="flex items-center px-4 py-2.5 hover:bg-blue-50 transition text-blue-900 font-medium">
                                             Lamaran Masuk
                                         </a>
                                     </li>
+                                    
+                                    <li class="border-t border-gray-100 my-1"></li>
+                                    
                                     <li>
-                                        <a href="{{ route('admin.master.index') }}" class="flex items-center px-4 py-2 hover:bg-blue-50 transition text-blue-900 font-bold border-t border-gray-100 mt-1 pt-3">
-                                             Master Data (Kategori/Experience)
+                                        <a href="{{ route('admin.master.index') }}" class="flex items-center px-4 py-2.5 hover:bg-blue-50 transition text-blue-900 font-medium">
+                                                Master Data (Kategori/Experience)
                                         </a>
                                     </li>
-                                    {{-- INI FITUR BARUNYA BOS --}}
                                     <li>
-                                        <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-2 hover:bg-blue-50 transition text-blue-900 font-bold">
-                                             Kelola Admin
+                                        <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-2.5 hover:bg-blue-50 transition text-blue-900 font-medium">
+                                                Kelola Admin
                                         </a>
                                     </li>
                                 </ul>
                             @else
-                                <div class="px-4 py-3 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                                <div class="px-4 py-3 text-[10px] text-slate-500 font-bold bg-slate-50 rounded-t-xl uppercase tracking-widest">
                                     Menu Pelamar
                                 </div>
                                 <ul class="py-2 text-sm text-gray-700">
                                     <li>
-                                        <a href="/dashboard" class="flex items-center px-4 py-2 hover:bg-gray-100 transition">
+                                        <a href="/dashboard" class="flex items-center px-4 py-2.5 hover:bg-gray-100 transition font-medium text-slate-700">
                                             Dashboard Saya
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="/careers" class="flex items-center px-4 py-2 hover:bg-gray-100 transition">
+                                        <a href="/careers" class="flex items-center px-4 py-2.5 hover:bg-gray-100 transition font-medium text-slate-700">
                                             Cari Lowongan
                                         </a>
                                     </li>
                                 </ul>
                             @endif
 
-                            <div class="py-1">
+                            <div class="py-2">
                                 <form action="{{ route('logout') }}" method="POST" onsubmit="return confirm('Yakin ingin keluar?')">
                                     @csrf
-                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 font-bold hover:bg-red-50 transition">
+                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 font-medium hover:bg-red-50 transition">
                                         Logout / Keluar
                                     </button>
                                 </form>
@@ -106,22 +123,13 @@
                     </li>
                 @else
                     <li>
-                        <a href="/login" class="block py-2 md:p-0 transition-colors">
-                            <span class="text-white font-bold">Login</span>
+                        <a href="/login" class="block rounded py-2 pl-3 pr-4 md:p-0 hover:bg-white/10 md:hover:bg-transparent">
+                            <span class="text-white font-bold nav-text transition-colors duration-300">Login</span>
                         </a>
                     </li>
                 @endauth
             </ul>
         </div>
-
-        <div class="md:hidden ml-auto">
-            <button data-collapse-toggle="navbar-sticky" type="button" class="inline-flex h-10 w-10 items-center justify-center rounded-lg p-2 text-gray-400 hover:bg-white/10 focus:outline-none">
-                <svg class="h-5 w-5" fill="none" viewBox="0 0 17 14">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15" />
-                </svg>
-            </button>
-        </div>
-
     </div>
 </nav>
 
@@ -172,23 +180,48 @@
 
 <script>
     const navbar = document.getElementById("main-navbar");
-    const navLinks = navbar.querySelectorAll("a span, button span");
+    const navTexts = navbar.querySelectorAll(".nav-text"); 
+    const navIcons = navbar.querySelectorAll(".nav-icon");
+    const burgerIcon = navbar.querySelector(".burger-icon");
 
     window.addEventListener("scroll", () => {
         if (window.scrollY > 10) {
             navbar.classList.remove("bg-blue-900");
             navbar.classList.add("bg-white", "shadow-md");
-            navLinks.forEach((link) => {
-                link.classList.remove("text-white");
-                link.classList.add("text-slate-800");
+            
+            navTexts.forEach((el) => {
+                el.classList.remove("text-white");
+                el.classList.add("text-slate-800");
             });
+            
+            navIcons.forEach((el) => {
+                el.classList.remove("text-white");
+                el.classList.add("text-slate-800");
+            });
+
+            if(burgerIcon) {
+                burgerIcon.classList.remove("text-white");
+                burgerIcon.classList.add("text-slate-800");
+            }
+
         } else {
             navbar.classList.add("bg-blue-900");
             navbar.classList.remove("bg-white", "shadow-md");
-            navLinks.forEach((link) => {
-                link.classList.remove("text-slate-800");
-                link.classList.add("text-white");
+            
+            navTexts.forEach((el) => {
+                el.classList.remove("text-slate-800");
+                el.classList.add("text-white");
             });
+
+            navIcons.forEach((el) => {
+                el.classList.remove("text-slate-800");
+                el.classList.add("text-white");
+            });
+
+            if(burgerIcon) {
+                burgerIcon.classList.remove("text-slate-800");
+                burgerIcon.classList.add("text-white");
+            }
         }
     });
 
