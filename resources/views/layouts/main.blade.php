@@ -138,27 +138,26 @@
                 <span class="font-light text-slate-200 text-sm text-start block italic">Jl. Raya PR Sukun No. 1-2 Gondosari, Gebog, Kabupaten Kudus, Jawa Tengah 59354, Indonesia</span>
                 <ul class="mt-5 text-sm text-slate-200">
                     <li>
-                        <a href="mailto:karir@sukunsigaret.com" class="flex items-center hover:text-white transition">
+                        <a href="mailto:rekrutmen@sukunsigaret.com" class="flex items-center hover:text-white transition">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="w-4 h-4 mr-2" viewBox="0 0 24 24">
                                 <path d="M12 12.713l-11.985-7.713v13.5c0 1.104.896 2 2 2h19.97c1.104 0 2-.896 2-2v-13.5l-11.985 7.713zm11.985-9.713c0-1.104-.896-2-2-2h-19.97c-1.104 0-2 .896-2 2v.217l12 7.732 11.985-7.732v-.217z" />
                             </svg>
-                            karir@sukunsigaret.com
+                            rekrutmen@sukunsigaret.com
                         </a>
                     </li>
                 </ul>
             </div>
             <div></div>
-           <div class="flex flex-row space-x-6 text-white mt-4 justify-end">
-    <a href="https://www.instagram.com/pt.sukun/" target="_blank" class="hover:text-pink-400 transition transform hover:scale-110 flex items-center gap-2">
-        <i class="fa-brands fa-instagram text-3xl"></i>
-        <span class="text-sm">Instagram</span>
-    </a>
-    
-    <a href="https://www.linkedin.com/company/pt-sukun/" target="_blank" class="hover:text-blue-400 transition transform hover:scale-110 flex items-center gap-2">
-        <i class="fa-brands fa-linkedin text-3xl"></i>
-        <span class="text-sm">LinkedIn</span>
-    </a>
-</div>
+            <div class="flex flex-row space-x-6 text-white mt-4 justify-end items-center">
+                <a href="https://www.instagram.com/lifeatsukun/" target="_blank" class="hover:text-pink-400 transition transform hover:scale-110 flex items-center gap-2">
+                    <i class="fa-brands fa-instagram text-3xl"></i>
+                    <span class="text-sm font-bold">Instagram</span>
+                </a>
+                
+                <a href="https://www.linkedin.com/company/pt-sukun/" target="_blank" class="hover:text-blue-400 transition transform hover:scale-110 flex items-center gap-2">
+                    <i class="fa-brands fa-linkedin text-3xl"></i>
+                    <span class="text-sm font-bold">LinkedIn</span>
+                </a>
             </div>
         </div>
     </div>
