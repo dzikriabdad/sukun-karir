@@ -49,31 +49,30 @@ class LowonganController extends Controller
         $lowongans = $query->latest()->paginate(6);            
         $lowongans->appends($request->all());
 
-        // INI TAMBAHANNYA: Ambil data master buat ngisi dropdown!
+        // Ambil data master buat dropdown filter
         $categories = \App\Models\Category::all();
         $experiences = \App\Models\Experience::all();
 
-        // Jangan lupa lempar $categories dan $experiences ke compact
         return view('careers', compact('lowongans', 'categories', 'experiences'));
     }
 
-    public function show($identifier)
+    public function show($slug)
     {
-        $lowongan = Lowongan::with('category')->where('slug', $identifier)->first();
-
-        if (!$lowongan) {
-            $lowongan = Lowongan::with('category')->find($identifier);
-        }
-
-        if (!$lowongan) {
-            abort(404, 'Maaf, lowongan tidak ditemukan atau link sudah tidak berlaku.');
-        }
+        // =========================================================================
+        // LOGIKA ANTI-TEMBAK: Kunci pintu pakai firstOrFail()
+        // Cuma cari berdasarkan SLUG, Status AKTIF, dan Deadline BELUM LEWAT
+        // =========================================================================
+        $lowongan = Lowongan::with('category')
+            ->where('slug', $slug)
+            ->where('status', 'aktif')
+            ->whereDate('deadline', '>=', Carbon::today())
+            ->firstOrFail(); // Kalau senior masukin ID angka, dia mental ke 404
 
         // =========================================================================
-        // LOGIKA FINAL: Cek Status Spesifik Pelamar (Diproses / Ditolak)
+        // LOGIKA CEK STATUS PELAMAR
         // =========================================================================
         $hasActiveApplication = false;
-        $isRejected = false; // <-- LOGIKA SAKTI RE-APPLY
+        $isRejected = false; 
         
         if (Auth::check() && Auth::user()->role !== 'admin') {
             $lamaran = Application::where('user_id', Auth::id())
@@ -81,15 +80,16 @@ class LowonganController extends Controller
                 ->first();
 
             if ($lamaran) {
-                // Sesuaikan 'Tolak Lamaran' dengan value yang ada di dropdown Admin lu
+                // Cek apakah lamaran ditolak
                 if ($lamaran->status === 'rejected' || $lamaran->status === 'Tolak Lamaran') {
-                    $isRejected = true; // Kalau ditolak, tombolnya nyala + tulisan "Lamar Ulang"
+                    $isRejected = true; 
                 } else {
-                    $hasActiveApplication = true; // Kalau masih diproses, tombol mati
+                    $hasActiveApplication = true; 
                 }
             }
         }
         
+        // Cek darimana request berasal (Halaman Pelamar atau Publik)
         if (request()->is('dashboard/*') || request()->is('lowongan/*')) {
             return view('pelamar.show_loker', compact('lowongan', 'hasActiveApplication', 'isRejected'));
         }

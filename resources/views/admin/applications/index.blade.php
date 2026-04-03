@@ -26,17 +26,18 @@
 
         {{-- KOTAK FILTER & PENCARIAN --}}
         <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 mb-8">
-            <form action="{{ route('admin.applications.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-5 items-end">
+            {{-- GUA UBAH grid-cols-3 JADI grid-cols-4 BIAR MUAT --}}
+            <form action="{{ route('admin.applications.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-5 items-end">
                 
-                {{-- Fitur Baru: Kolom Cari Nama --}}
+                {{-- Kolom Cari Nama --}}
                 <div>
-                    <label class="block mb-2 text-xs font-black text-slate-400 uppercase tracking-widest">Cari Nama Pelamar</label>
+                    <label class="block mb-2 text-xs font-black text-slate-400 uppercase tracking-widest">Cari Nama</label>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Ketik nama pelamar..." class="bg-gray-50 border border-gray-200 text-sm rounded-xl block w-full p-3 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
                 </div>
 
                 {{-- Filter Posisi Lowongan --}}
                 <div>
-                    <label class="block mb-2 text-xs font-black text-slate-400 uppercase tracking-widest">Filter Posisi</label>
+                    <label class="block mb-2 text-xs font-black text-slate-400 uppercase tracking-widest">Posisi</label>
                     <select name="lowongan_id" class="bg-gray-50 border border-gray-200 text-sm rounded-xl block w-full p-3 focus:ring-blue-500 focus:border-blue-500 outline-none">
                         <option value="">Semua Lowongan</option>
                         @foreach($lowongans as $loker)
@@ -44,13 +45,30 @@
                         @endforeach
                     </select>
                 </div>
+
+                {{-- FITUR BARU: FILTER TAHAPAN --}}
+                <div>
+                    <label class="block mb-2 text-xs font-black text-slate-400 uppercase tracking-widest">Tahapan</label>
+                    <select name="status" class="bg-gray-50 border border-gray-200 text-sm rounded-xl block w-full p-3 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                        <option value="">Semua Tahapan</option>
+                        <option value="screening" {{ request('status') == 'screening' ? 'selected' : '' }}>1. Screening</option>
+                        <option value="psikotes" {{ request('status') == 'psikotes' ? 'selected' : '' }}>2. Psikotes</option>
+                        <option value="lgd" {{ request('status') == 'lgd' ? 'selected' : '' }}>3. LGD (Distri)</option>
+                        <option value="test_excel" {{ request('status') == 'test_excel' ? 'selected' : '' }}>4. Test Excel</option>
+                        <option value="wawancara_hrd" {{ request('status') == 'wawancara_hrd' ? 'selected' : '' }}>5. Wawancara HRD</option>
+                        <option value="wawancara_user" {{ request('status') == 'wawancara_user' ? 'selected' : '' }}>6. Wawancara User</option>
+                        <option value="mcu_offering" {{ request('status') == 'mcu_offering' ? 'selected' : '' }}>7. MCU & Offering</option>
+                        <option value="hired" {{ request('status') == 'hired' ? 'selected' : '' }}>8. Terima (Hired)</option>
+                        <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>9. Tolak Lamaran</option>
+                    </select>
+                </div>
                 
                 {{-- Tombol Aksi --}}
                 <div class="flex gap-2">
                     <button type="submit" class="flex-1 bg-blue-900 text-white font-bold py-3 rounded-xl hover:bg-blue-800 transition shadow-lg shadow-blue-900/20 text-sm">
-                        Cari & Filter
+                        Cari
                     </button>
-                    <a href="{{ route('admin.applications.index') }}" class="bg-gray-100 text-gray-500 font-bold py-3 px-6 rounded-xl hover:bg-gray-200 transition text-sm flex items-center">
+                    <a href="{{ route('admin.applications.index') }}" class="bg-gray-100 text-gray-500 font-bold py-3 px-4 rounded-xl hover:bg-gray-200 transition text-sm flex items-center justify-center">
                         Reset
                     </a>
                 </div>
@@ -63,18 +81,18 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-blue-900 text-white text-[11px] font-black uppercase tracking-[0.15em]">
-                            <th class="px-8 py-6">Data Pelamar</th>
-                            <th class="px-8 py-6">Posisi & Tgl. Lamar</th>
-                            <th class="px-8 py-6">Ekspektasi Gaji</th>
-                            <th class="px-8 py-6 text-center">Status Tahapan</th>
-                            <th class="px-8 py-6 text-center">Update Tahap</th>
+                            <th class="px-8 py-6 whitespace-nowrap">Data Pelamar</th>
+                            <th class="px-8 py-6 whitespace-nowrap">Posisi & Tgl. Lamar</th>
+                            <th class="px-8 py-6 whitespace-nowrap">Ekspektasi Gaji</th>
+                            <th class="px-8 py-6 text-center whitespace-nowrap">Status Tahapan</th>
+                            <th class="px-8 py-6 text-center whitespace-nowrap">Update Tahap</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
                         @foreach($applications as $app)
                         <tr class="hover:bg-blue-50/40 transition">
                             {{-- 1. Data Pelamar --}}
-                            <td class="px-8 py-6">
+                            <td class="px-8 py-6 whitespace-nowrap">
                                 <a href="{{ route('admin.applications.show', $app->id) }}" class="font-bold text-blue-900 hover:text-blue-700 hover:underline transition block">
                                     {{ $app->user->name }}
                                 </a>
@@ -96,15 +114,15 @@
                             </td>
 
                             {{-- 2. Posisi & Tanggal Lamar --}}
-                            <td class="px-8 py-6">
-                                <span class="text-sm font-bold text-blue-900 block">{{ $app->lowongan->title }}</span>
+                            <td class="px-8 py-6 whitespace-nowrap">
+                                <span class="text-sm font-bold text-blue-900 block truncate max-w-[200px]" title="{{ $app->lowongan->title }}">{{ $app->lowongan->title }}</span>
                                 <span class="text-[10px] text-slate-400 font-bold uppercase tracking-tight">
                                     Diterima: {{ $app->created_at->format('d M Y | H:i') }}
                                 </span>
                             </td>
 
                             {{-- 3. Ekspektasi Gaji --}}
-                            <td class="px-8 py-6">
+                            <td class="px-8 py-6 whitespace-nowrap">
                                 @if($app->expected_salary == 0 || is_null($app->expected_salary))
                                     <div class="text-[11px] font-black text-gray-500 uppercase tracking-widest bg-gray-100 inline-block px-2 py-1 rounded">Negosiasi</div>
                                 @else
@@ -120,7 +138,7 @@
                                 </div>
                             </td>
 
-                            {{-- 4. Status Tahapan (Badge) --}}
+                            {{-- 4. Status Tahapan --}}
                             <td class="px-8 py-6 text-center">
                                 @php
                                     $statusClasses = [
@@ -146,17 +164,17 @@
                                         'rejected'       => 'Rejected'
                                     ];
                                 @endphp
-                                <span class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] {{ $statusClasses[$app->status] ?? 'bg-gray-100' }}">
+                                <span class="inline-flex items-center justify-center whitespace-nowrap px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] {{ $statusClasses[$app->status] ?? 'bg-gray-100' }}">
                                     {{ $statusLabel[$app->status] ?? $app->status }}
                                 </span>
                             </td>
 
-                            {{-- 5. Update Tahap (Dropdown) --}}
-                            <td class="px-8 py-6">
+                            {{-- 5. Update Tahap --}}
+                            <td class="px-8 py-6 whitespace-nowrap">
                                 <form action="{{ route('admin.applications.update', $app->id) }}" method="POST">
                                     @csrf
                                     @method('PATCH')
-                                    <select name="status" onchange="this.form.submit()" class="w-full text-[11px] font-bold bg-gray-50 border border-gray-100 rounded-xl p-3 focus:ring-blue-500 cursor-pointer outline-none">
+                                    <select name="status" onchange="this.form.submit()" class="w-full min-w-[160px] text-[11px] font-bold bg-gray-50 border border-gray-100 rounded-xl p-3 focus:ring-blue-500 cursor-pointer outline-none">
                                         <option value="screening" {{ $app->status == 'screening' ? 'selected' : '' }}>1. Screening</option>
                                         <option value="psikotes" {{ $app->status == 'psikotes' ? 'selected' : '' }}>2. Psikotes</option>
                                         <option value="lgd" {{ $app->status == 'lgd' ? 'selected' : '' }}>3. LGD (Distri)</option>

@@ -6,7 +6,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PelamarController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ApplicantDetailController;
-use App\Http\Controllers\ApplicationController; // <-- INI GUA TAMBAHIN BOS
 
 /*
 |--------------------------------------------------------------------------
@@ -15,9 +14,7 @@ use App\Http\Controllers\ApplicationController; // <-- INI GUA TAMBAHIN BOS
 */
 Route::get('/', [LowonganController::class, 'index'])->name('home');
 Route::get('/careers', [LowonganController::class, 'allCareers'])->name('careers.index');
-
-// INI YANG DIUBAH JADI SLUG BIAR URL-NYA CANTIK & AMAN
-Route::get('/career-detail/{slug}', [LowonganController::class, 'show'])->name('career.detail');
+Route::get('/career-detail/{id}', [LowonganController::class, 'show'])->name('career.detail');
 
 Route::get('/berita', function() {
     return view('berita');
@@ -39,7 +36,7 @@ Route::middleware(['guest'])->group(function () {
     Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
     Route::post('/admin/login', [AuthController::class, 'adminLogin']);
 
-    // Fitur Lupa Password
+    // Fitur Lupa Password (Dipindah ke sini biar lebih aman)
     Route::get('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'requestForm'])->name('password.request');
     Route::post('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'sendResetLink'])->name('password.email');
     Route::get('/reset-password/{token}', [App\Http\Controllers\PasswordResetController::class, 'resetForm'])->name('password.reset');
@@ -69,10 +66,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/lengkapi-profil', [ApplicantDetailController::class, 'store'])->name('profil.store');
         // ====================================================
 
-        // ==== INI YANG GUA BENERIN BIAR GAK 500 ERROR LAGI ====
-        // Proses Melamar Kerja (Sekarang ngarah ke ApplicationController)
-        Route::get('/lowongan/{id}/apply', [ApplicationController::class, 'create'])->name('pelamar.apply');
-        Route::post('/lowongan/{id}/apply', [ApplicationController::class, 'store'])->name('pelamar.store');
+        // Proses Melamar Kerja
+        Route::get('/lowongan/{id}/apply', [PelamarController::class, 'showApplyForm'])->name('pelamar.apply');
+        Route::post('/lowongan/{id}/apply', [PelamarController::class, 'applyJob'])->name('pelamar.store');
     });
 
     /* --- B. AREA ADMIN / HRD --- */
@@ -111,12 +107,4 @@ Route::middleware(['auth'])->group(function () {
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-});
-
-Route::get('/paksa-keluar', function() {
-    \Illuminate\Support\Facades\Artisan::call('vendor:publish', [
-        '--tag' => 'laravel-notifications', 
-        '--force' => true
-    ]);
-    return 'SUKSES BOS! Coba refresh FileZilla-nya sekarang.';
 });

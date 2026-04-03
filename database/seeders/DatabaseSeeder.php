@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
 
         // Membuat Akun Pelamar (Untuk Testing)
         User::create([
-            'name' => 'Dzikri (Pelamar)',
+            'name' => 'contoh (Pelamar)',
             'email' => 'pelamar@gmail.com',
             'password' => Hash::make('password123'), 
             'role' => 'pelamar',

@@ -1,3 +1,9 @@
+<IfModule mod_security.c>
+    # MATIIN FILTER BIAR GAK KENA 403 PAS POST/EDIT
+    SecFilterEngine Off
+    SecFilterScanPOST Off
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
