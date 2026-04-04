@@ -72,17 +72,13 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('admin')->middleware(['admin'])->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
         
-        // Lowongan CRUD
-        Route::resource('lowongan', AdminController::class, [
-            'names' => [
-                'index'   => 'admin.lowongan.index',
-                'create'  => 'admin.lowongan.create',
-                'store'   => 'admin.lowongan.store',
-                'edit'    => 'admin.lowongan.edit',
-                'update'  => 'admin.lowongan.update',
-                'destroy' => 'admin.lowongan.destroy',
-            ]
-        ])->except(['show']);
+        // Lowongan CRUD (INI YANG DIBENERIN BIAR GAK ERROR!)
+        Route::get('/lowongan', [AdminController::class, 'indexLowongan'])->name('admin.lowongan.index');
+        Route::get('/lowongan/create', [AdminController::class, 'createLowongan'])->name('admin.lowongan.create');
+        Route::post('/lowongan', [AdminController::class, 'storeLowongan'])->name('admin.lowongan.store');
+        Route::get('/lowongan/{id}/edit', [AdminController::class, 'editLowongan'])->name('admin.lowongan.edit');
+        Route::put('/lowongan/{id}', [AdminController::class, 'updateLowongan'])->name('admin.lowongan.update');
+        Route::delete('/lowongan/{id}', [AdminController::class, 'destroyLowongan'])->name('admin.lowongan.destroy');
 
         // Pelamar & Seleksi
         Route::get('/applications', [AdminController::class, 'indexApplications'])->name('admin.applications.index');
