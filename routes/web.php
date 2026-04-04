@@ -6,44 +6,38 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PelamarController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ApplicantDetailController;
-use App\Http\Controllers\ApplicationController; // <-- INI GUA TAMBAHIN BOS
 
 /*
 |--------------------------------------------------------------------------
-| 1. PUBLIC ROUTES (Bisa diakses siapa saja)
+| 1. PUBLIC ROUTES
 |--------------------------------------------------------------------------
 */
 Route::get('/', [LowonganController::class, 'index'])->name('home');
 Route::get('/careers', [LowonganController::class, 'allCareers'])->name('careers.index');
-
-// INI YANG DIUBAH JADI SLUG BIAR URL-NYA CANTIK & AMAN
 Route::get('/career-detail/{slug}', [LowonganController::class, 'show'])->name('career.detail');
-
-Route::get('/berita', function() {
-    return view('berita');
-})->name('berita');
+Route::get('/berita', fn() => view('berita'))->name('berita');
 
 /*
 |--------------------------------------------------------------------------
-| 2. GUEST ROUTES (Hanya untuk yang BELUM login)
+| 2. GUEST ROUTES (Login/Register)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['guest'])->group(function () {
-    // Auth Pelamar
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
     
-    // Auth Admin
     Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
     Route::post('/admin/login', [AuthController::class, 'adminLogin']);
 
-    // Fitur Lupa Password
-    Route::get('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'requestForm'])->name('password.request');
-    Route::post('/forgot-password', [App\Http\Controllers\PasswordResetController::class, 'sendResetLink'])->name('password.email');
-    Route::get('/reset-password/{token}', [App\Http\Controllers\PasswordResetController::class, 'resetForm'])->name('password.reset');
-    Route::post('/reset-password', [App\Http\Controllers\PasswordResetController::class, 'updatePassword'])->name('password.update');
+    // Password Reset
+    Route::controller(App\Http\Controllers\PasswordResetController::class)->group(function () {
+        Route::get('/forgot-password', 'requestForm')->name('password.request');
+        Route::post('/forgot-password', 'sendResetLink')->name('password.email');
+        Route::get('/reset-password/{token}', 'resetForm')->name('password.reset');
+        Route::post('/reset-password', 'updatePassword')->name('password.update');
+    });
 });
 
 /*
@@ -53,42 +47,44 @@ Route::middleware(['guest'])->group(function () {
 */
 Route::middleware(['auth'])->group(function () {
 
-    /* --- A. AREA PELAMAR --- */
+    /* --- AREA PELAMAR --- */
     Route::middleware(['pelamar'])->group(function () {
-        // Dashboard & Profil CV bawaan
         Route::get('/dashboard', [PelamarController::class, 'dashboard'])->name('pelamar.dashboard');
-        Route::get('/create-cv', [PelamarController::class, 'createCv'])->name('pelamar.create_cv');
-        Route::post('/store-cv', [PelamarController::class, 'storeCv'])->name('pelamar.store_cv');
-        
-        // Rute untuk Edit CV bawaan
-        Route::get('/edit-cv', [PelamarController::class, 'editCv'])->name('pelamar.edit_cv');
-        Route::put('/update-cv', [PelamarController::class, 'updateCv'])->name('pelamar.update_cv');
 
-        // ==== RUTE BARU: Isi Biodata & Upload CV Lengkap ====
+        // MANAJEMEN CV (Satu pintu di PelamarController)
+        Route::prefix('cv')->group(function () {
+            Route::get('/create', [PelamarController::class, 'createCv'])->name('pelamar.create_cv');
+            Route::post('/store', [PelamarController::class, 'storeCv'])->name('pelamar.store_cv');
+            Route::get('/edit', [PelamarController::class, 'editCv'])->name('pelamar.edit_cv');
+            Route::put('/update', [PelamarController::class, 'updateCv'])->name('pelamar.update_cv');
+        });
+
+        // PROSES LAMAR KERJA (Gua arahin ke PelamarController@applyJob biar sinkron)
+        Route::get('/lowongan/{id}/apply', [PelamarController::class, 'showApplyForm'])->name('pelamar.apply');
+        Route::post('/lowongan/{id}/apply', [PelamarController::class, 'applyJob'])->name('pelamar.apply.submit');
+
+        // Lengkapi Profil Tambahan (Jika masih dipisah)
         Route::get('/lengkapi-profil', [ApplicantDetailController::class, 'create'])->name('profil.create');
         Route::post('/lengkapi-profil', [ApplicantDetailController::class, 'store'])->name('profil.store');
-        // ====================================================
-
-        // ==== INI YANG GUA BENERIN BIAR GAK 500 ERROR LAGI ====
-        // Proses Melamar Kerja (Sekarang ngarah ke ApplicationController)
-        Route::get('/lowongan/{id}/apply', [ApplicationController::class, 'create'])->name('pelamar.apply');
-        Route::post('/lowongan/{id}/apply', [ApplicationController::class, 'store'])->name('pelamar.store');
     });
 
-    /* --- B. AREA ADMIN / HRD --- */
+    /* --- AREA ADMIN / HRD --- */
     Route::prefix('admin')->middleware(['admin'])->group(function () {
-        // Dashboard Admin
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
         
-        // Manajemen Lowongan (CRUD)
-        Route::get('/lowongan', [AdminController::class, 'indexLowongan'])->name('admin.lowongan.index');
-        Route::get('/lowongan/create', [AdminController::class, 'createLowongan'])->name('admin.lowongan.create');
-        Route::post('/lowongan', [AdminController::class, 'storeLowongan'])->name('admin.lowongan.store');
-        Route::get('/lowongan/{id}/edit', [AdminController::class, 'editLowongan'])->name('admin.lowongan.edit');
-        Route::put('/lowongan/{id}', [AdminController::class, 'updateLowongan'])->name('admin.lowongan.update');
-        Route::delete('/lowongan/{id}', [AdminController::class, 'destroyLowongan'])->name('admin.lowongan.destroy');
-        
-        // Manajemen Pelamar & Seleksi
+        // Lowongan CRUD
+        Route::resource('lowongan', AdminController::class, [
+            'names' => [
+                'index'   => 'admin.lowongan.index',
+                'create'  => 'admin.lowongan.create',
+                'store'   => 'admin.lowongan.store',
+                'edit'    => 'admin.lowongan.edit',
+                'update'  => 'admin.lowongan.update',
+                'destroy' => 'admin.lowongan.destroy',
+            ]
+        ])->except(['show']);
+
+        // Pelamar & Seleksi
         Route::get('/applications', [AdminController::class, 'indexApplications'])->name('admin.applications.index');
         Route::get('/seleksi/detail/{id}', [AdminController::class, 'showApplication'])->name('admin.applications.show');
         Route::patch('/applications/{id}/update', [AdminController::class, 'updateApplicationStatus'])->name('admin.applications.update');
@@ -98,25 +94,21 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/', [AdminController::class, 'indexMaster'])->name('index');
             Route::post('/category', [AdminController::class, 'storeCategory'])->name('category.store');
             Route::post('/experience', [AdminController::class, 'storeExperience'])->name('experience.store');
-            
             Route::delete('/category/{id}', [AdminController::class, 'destroyCategory'])->name('category.destroy');
             Route::delete('/experience/{id}', [AdminController::class, 'destroyExperience'])->name('experience.destroy');
         });
 
-        // MANAJEMEN ADMIN
+        // User Admin
         Route::get('/users/admin', [AdminController::class, 'indexAdmin'])->name('admin.users.index');
         Route::post('/users/admin', [AdminController::class, 'storeAdmin'])->name('admin.users.store');
         Route::delete('/users/admin/{id}', [AdminController::class, 'destroyAdmin'])->name('admin.users.destroy');
     });
 
-    // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-Route::get('/paksa-keluar', function() {
-    \Illuminate\Support\Facades\Artisan::call('vendor:publish', [
-        '--tag' => 'laravel-notifications', 
-        '--force' => true
-    ]);
-    return 'SUKSES BOS! Coba refresh FileZilla-nya sekarang.';
+/* --- DEV TOOLS --- */
+Route::get('/clear-cache', function() {
+    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+    return 'Cache dibersihkan Bos!';
 });

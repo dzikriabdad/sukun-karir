@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.2
+-- version 5.2.3
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 10, 2026 at 06:39 AM
+-- Generation Time: Apr 03, 2026 at 04:51 PM
 -- Server version: 8.0.30
--- PHP Version: 8.2.30
+-- PHP Version: 8.5.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,9 +24,30 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `applicant_details`
+--
+
+DROP TABLE IF EXISTS `applicant_details`;
+CREATE TABLE `applicant_details` (
+  `id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `nik` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone_number` varchar(15) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address` text COLLATE utf8mb4_unicode_ci,
+  `last_education` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cv_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `photo_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `applications`
 --
 
+DROP TABLE IF EXISTS `applications`;
 CREATE TABLE `applications` (
   `id` bigint UNSIGNED NOT NULL,
   `user_id` bigint UNSIGNED NOT NULL,
@@ -40,22 +61,13 @@ CREATE TABLE `applications` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `applications`
---
-
-INSERT INTO `applications` (`id`, `user_id`, `lowongan_id`, `application_reason`, `commitment`, `relocation_ready`, `expected_salary`, `status`, `created_at`, `updated_at`) VALUES
-(1, 2, 1, 'test 1', 'test 1', '0', 20000000, 'rejected', '2026-03-04 21:54:13', '2026-03-04 21:55:24'),
-(3, 2, 1, 'Test2', 'Test2', '0', 2000000, 'screening', '2026-03-04 23:13:25', '2026-03-04 23:13:25'),
-(4, 3, 2, 'Ingin berkontribusi', 'inggin berkembang bersama', '1', 5000000, 'rejected', '2026-03-07 18:14:04', '2026-03-07 18:19:12'),
-(5, 3, 2, 'Ingin berkontribusi 2', 'inggin berkembang bersama 2', '1', 6000000, 'screening', '2026-03-07 18:22:25', '2026-03-07 18:22:25');
-
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `cache`
 --
 
+DROP TABLE IF EXISTS `cache`;
 CREATE TABLE `cache` (
   `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `value` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -68,6 +80,7 @@ CREATE TABLE `cache` (
 -- Table structure for table `cache_locks`
 --
 
+DROP TABLE IF EXISTS `cache_locks`;
 CREATE TABLE `cache_locks` (
   `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `owner` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -80,6 +93,7 @@ CREATE TABLE `cache_locks` (
 -- Table structure for table `categories`
 --
 
+DROP TABLE IF EXISTS `categories`;
 CREATE TABLE `categories` (
   `id` bigint UNSIGNED NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -93,10 +107,10 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`id`, `name`, `slug`, `created_at`, `updated_at`) VALUES
-(1, 'Technology', 'technology', '2026-03-04 21:49:33', '2026-03-04 21:49:33'),
-(2, 'Marketing', 'marketing', '2026-03-04 21:49:33', '2026-03-04 21:49:33'),
-(3, 'Finance', 'finance', '2026-03-04 21:49:33', '2026-03-04 21:49:33'),
-(4, 'Logistics & Supply Chain', 'logistics-supply-chain', '2026-03-04 21:49:33', '2026-03-04 21:49:33');
+(1, 'Technology', 'technology', '2026-04-03 09:20:09', '2026-04-03 09:20:09'),
+(2, 'Marketing', 'marketing', '2026-04-03 09:20:09', '2026-04-03 09:20:09'),
+(3, 'Finance', 'finance', '2026-04-03 09:20:09', '2026-04-03 09:20:09'),
+(4, 'Logistics & Supply Chain', 'logistics-supply-chain', '2026-04-03 09:20:09', '2026-04-03 09:20:09');
 
 -- --------------------------------------------------------
 
@@ -104,6 +118,7 @@ INSERT INTO `categories` (`id`, `name`, `slug`, `created_at`, `updated_at`) VALU
 -- Table structure for table `cvs`
 --
 
+DROP TABLE IF EXISTS `cvs`;
 CREATE TABLE `cvs` (
   `id` bigint UNSIGNED NOT NULL,
   `user_id` bigint UNSIGNED NOT NULL,
@@ -119,7 +134,7 @@ CREATE TABLE `cvs` (
   `last_education` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `university` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `major` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `gpa` decimal(3,2) NOT NULL,
+  `gpa` decimal(5,2) NOT NULL,
   `experience` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `file_cv` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -131,8 +146,7 @@ CREATE TABLE `cvs` (
 --
 
 INSERT INTO `cvs` (`id`, `user_id`, `full_name`, `identity_number`, `phone_number`, `gender`, `religion`, `marital_status`, `place_of_birth`, `date_of_birth`, `address`, `last_education`, `university`, `major`, `gpa`, `experience`, `file_cv`, `created_at`, `updated_at`) VALUES
-(1, 2, 'Dzikri (Pelamar)', NULL, '8111111111111111', 'Laki-laki', 'Islam', 'Belum Kawin', 'test 1', '2026-03-05', 'test 1', 'S3', 'UAD', 'Teknik Informatika', 4.00, 'test 1', '1772686432_2.pdf', '2026-03-04 21:53:52', '2026-03-06 19:56:35'),
-(2, 3, 'said', NULL, '81212121122', 'Laki-laki', 'Islam', 'Belum Kawin', 'Demak', '2026-03-07', 'test123', 'S1/D4', 'UNES', 'Sikologi', 4.00, 'test321', '1772864849_3.pdf', '2026-03-06 23:27:29', '2026-03-06 23:33:45');
+(1, 2, 'contoh (Pelamar)', NULL, '899999999999999', 'Laki-laki', 'Islam', 'Belum Kawin', 'amsterdam', '2008-02-01', 'oosfnaljnfjl', 'SD', 'blabla', 'blaba', 99.99, 'nljanfna', '1775233366_2.pdf', '2026-04-03 09:22:46', '2026-04-03 09:43:50');
 
 -- --------------------------------------------------------
 
@@ -140,6 +154,7 @@ INSERT INTO `cvs` (`id`, `user_id`, `full_name`, `identity_number`, `phone_numbe
 -- Table structure for table `experiences`
 --
 
+DROP TABLE IF EXISTS `experiences`;
 CREATE TABLE `experiences` (
   `id` bigint UNSIGNED NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -152,8 +167,7 @@ CREATE TABLE `experiences` (
 --
 
 INSERT INTO `experiences` (`id`, `name`, `created_at`, `updated_at`) VALUES
-(1, 'Senior', '2026-03-04 21:51:51', '2026-03-04 21:51:51'),
-(2, 'SUKUN', '2026-03-06 21:42:46', '2026-03-06 21:42:46');
+(1, 'test', '2026-04-03 09:20:32', '2026-04-03 09:20:32');
 
 -- --------------------------------------------------------
 
@@ -161,6 +175,7 @@ INSERT INTO `experiences` (`id`, `name`, `created_at`, `updated_at`) VALUES
 -- Table structure for table `failed_jobs`
 --
 
+DROP TABLE IF EXISTS `failed_jobs`;
 CREATE TABLE `failed_jobs` (
   `id` bigint UNSIGNED NOT NULL,
   `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -177,6 +192,7 @@ CREATE TABLE `failed_jobs` (
 -- Table structure for table `jobs`
 --
 
+DROP TABLE IF EXISTS `jobs`;
 CREATE TABLE `jobs` (
   `id` bigint UNSIGNED NOT NULL,
   `queue` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -193,6 +209,7 @@ CREATE TABLE `jobs` (
 -- Table structure for table `job_batches`
 --
 
+DROP TABLE IF EXISTS `job_batches`;
 CREATE TABLE `job_batches` (
   `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -212,6 +229,7 @@ CREATE TABLE `job_batches` (
 -- Table structure for table `lowongans`
 --
 
+DROP TABLE IF EXISTS `lowongans`;
 CREATE TABLE `lowongans` (
   `id` bigint UNSIGNED NOT NULL,
   `user_id` bigint UNSIGNED NOT NULL,
@@ -236,8 +254,7 @@ CREATE TABLE `lowongans` (
 --
 
 INSERT INTO `lowongans` (`id`, `user_id`, `category_id`, `title`, `slug`, `experience`, `description`, `requirements`, `location`, `start_date`, `deadline`, `status`, `is_relocation_asked`, `gambar`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 'test 1', 'test-1', 'Senior', 'test 1', 'test 1', 'test 1', '2026-03-05', '2026-03-07', 'aktif', 0, '1772686372_WhatsApp_Image_2026-02-03_at_10.15.21_(1).jpeg', '2026-03-04 21:52:52', '2026-03-04 21:52:52'),
-(2, 1, 2, 'posisi sisi', 'posisi-sisi', 'Senior', 'lalalala', 'lalailai', 'sialalala', '2026-03-07', '2026-03-08', 'aktif', 1, '1772858106_WhatsApp_Image_2025-11-18_at_07.37.42_70e398db.jpg', '2026-03-06 21:35:06', '2026-03-06 21:35:06');
+(1, 1, 1, 'test', 'test', 'test', 'laafoiahw\r\najfkawbfba\r\nbakfbabwfanknaib\r\nb afkhbaubfabwlbfa\r\nkjbfabflbaljwbf\r\nk awjkfawk f\r\nafwhbkabf', 'aklnfjlabjwbfajwbfaawa\r\na fkaw fka faahk \r\naljfbwjbfak  laj sfbalwf a\r\nafakw fkja  ahkfjbaljsba\r\nakh fkabfljabjsbkfa s,n fa wjkfajblsnafwfbakh s\r\nawhf ak khasbajkb fakhwf akjb s fkabwjkfbalkwbf\r\nwiodnfbb;bf;BFJBASF lnllnljabliqo', 'sana', '2026-03-03', '2026-04-30', 'aktif', 1, '1775233284_loker.jpeg', '2026-04-03 09:21:24', '2026-04-03 09:21:24');
 
 -- --------------------------------------------------------
 
@@ -245,6 +262,7 @@ INSERT INTO `lowongans` (`id`, `user_id`, `category_id`, `title`, `slug`, `exper
 -- Table structure for table `migrations`
 --
 
+DROP TABLE IF EXISTS `migrations`;
 CREATE TABLE `migrations` (
   `id` int UNSIGNED NOT NULL,
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -271,7 +289,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (13, '2026_02_25_022047_add_relocation_option_to_lowongans_table', 1),
 (14, '2026_02_25_055925_add_requirements_to_lowongans_table', 1),
 (15, '2026_02_25_062350_fix_cvs_table_columns', 1),
-(16, '2026_02_26_194740_ubah_kolom_status_di_applications', 1);
+(16, '2026_02_26_194740_ubah_kolom_status_di_applications', 1),
+(17, '2026_03_25_070355_create_applicant_details_table', 1),
+(18, '2026_03_26_011313_remove_unique_from_applications_table', 1),
+(19, '2026_04_03_162754_change_gpa_type_in_cvs_table', 2);
 
 -- --------------------------------------------------------
 
@@ -279,6 +300,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 -- Table structure for table `password_reset_tokens`
 --
 
+DROP TABLE IF EXISTS `password_reset_tokens`;
 CREATE TABLE `password_reset_tokens` (
   `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -291,6 +313,7 @@ CREATE TABLE `password_reset_tokens` (
 -- Table structure for table `sessions`
 --
 
+DROP TABLE IF EXISTS `sessions`;
 CREATE TABLE `sessions` (
   `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` bigint UNSIGNED DEFAULT NULL,
@@ -300,21 +323,13 @@ CREATE TABLE `sessions` (
   `last_activity` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `sessions`
---
-
-INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('9VkgAiBhYmt3xlkWncQPX9ErUmT185IMSCi6BxnB', 3, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoia0Jkb1RVa1E5dFN1WTluYU16em44S09nMGRlZnBid3pGN3hKdjR2NCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJuZXciO2E6MDp7fXM6Mzoib2xkIjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mzg6Imh0dHA6Ly9zdWt1bi1rYXJpci50ZXN0OjgwODAvZGFzaGJvYXJkIjtzOjU6InJvdXRlIjtzOjE3OiJwZWxhbWFyLmRhc2hib2FyZCI7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjM7fQ==', 1772932946),
-('tky95WLox5EuBAxIbyNc7OGiZZPnrIk166yooOlj', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:148.0) Gecko/20100101 Firefox/148.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiRjRwZUNQYUJTZFFFVjg4Y282a3l0Z05xdk9Wb1hsODFtcDJod3hlbCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDc6Imh0dHA6Ly9zdWt1bi1rYXJpci50ZXN0OjgwODAvYWRtaW4vYXBwbGljYXRpb25zIjtzOjU6InJvdXRlIjtzOjI0OiJhZG1pbi5hcHBsaWNhdGlvbnMuaW5kZXgiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=', 1772932752),
-('Z2IKgkBZF9XMGoj7jHMdGarhDvXhq5wB7ZUjzMNy', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiZFRHT000ZUR5dnZFbEQ1dWJ6cjZtUFpjbXdmR01MeFBEWkdYV09ReCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDA6Imh0dHA6Ly9zdWt1bi1rYXJpci50ZXN0OjgwODAvdXNlcnMvYWRtaW4iO3M6NToicm91dGUiO3M6MTc6ImFkbWluLnVzZXJzLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9', 1772952835);
-
 -- --------------------------------------------------------
 
 --
 -- Table structure for table `users`
 --
 
+DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` bigint UNSIGNED NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -332,20 +347,26 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `role`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Admin HRD', 'admin@gmail.com', NULL, '$2y$12$I8V.VljhXkzjJr/srpGjsu3z4h55lsKq429B7wohYWIktoygpmvYq', 'admin', NULL, '2026-03-04 21:49:33', '2026-03-04 21:49:33'),
-(2, 'Dzikri (Pelamar)', 'pelamar@gmail.com', NULL, '$2y$12$mYlZj.gAYjZ2FRQLzXC/XOulNgmIaVdLZ6ElmlUiiMYXgflNXX6mS', 'pelamar', NULL, '2026-03-04 21:49:33', '2026-03-04 21:49:33'),
-(3, 'said', 'said@gmail.com', NULL, '$2y$12$OjR8lmHffywRlQBKmCHc7OQ/3EKn4hcRKhbFGN6cqe6w/e9dzjmFC', 'pelamar', NULL, '2026-03-06 23:13:55', '2026-03-06 23:13:55'),
-(4, 'admin  2', 'admin2@gmail.com', NULL, '$2y$12$IKbzdamX7iurbgv9RD6ZNOYjKstW2uI8sI15uRmN./cdDMNmc/xiu', 'admin', NULL, '2026-03-07 23:53:55', '2026-03-07 23:53:55');
+(1, 'Admin HRD', 'admin@gmail.com', NULL, '$2y$12$HbuwwdiblMVPLAZWBhWge.BypxeqgFOZJrkIM3qohcXtemT7ZK/OW', 'admin', NULL, '2026-04-03 09:20:08', '2026-04-03 09:20:08'),
+(2, 'contoh (Pelamar)', 'pelamar@gmail.com', NULL, '$2y$12$VzPoXo4VhrgZ1P4p893ZuOt3thUBgoV3QPBH4HUHk6VLCe6FkRYzS', 'pelamar', NULL, '2026-04-03 09:20:09', '2026-04-03 09:20:09');
 
 --
 -- Indexes for dumped tables
 --
 
 --
+-- Indexes for table `applicant_details`
+--
+ALTER TABLE `applicant_details`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `applicant_details_user_id_foreign` (`user_id`);
+
+--
 -- Indexes for table `applications`
 --
 ALTER TABLE `applications`
   ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `applications_user_id_lowongan_id_unique` (`user_id`,`lowongan_id`),
   ADD KEY `applications_lowongan_id_foreign` (`lowongan_id`);
 
 --
@@ -444,10 +465,16 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `applicant_details`
+--
+ALTER TABLE `applicant_details`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `applications`
 --
 ALTER TABLE `applications`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -459,13 +486,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `cvs`
 --
 ALTER TABLE `cvs`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `experiences`
 --
 ALTER TABLE `experiences`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -483,23 +510,36 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `lowongans`
 --
 ALTER TABLE `lowongans`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `applicant_details`
+--
+ALTER TABLE `applicant_details`
+  ADD CONSTRAINT `applicant_details_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `applications`
+--
+ALTER TABLE `applications`
+  ADD CONSTRAINT `applications_lowongan_id_foreign` FOREIGN KEY (`lowongan_id`) REFERENCES `lowongans` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `applications_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `cvs`
