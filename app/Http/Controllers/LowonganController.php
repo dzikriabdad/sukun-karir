@@ -20,7 +20,7 @@ class LowonganController extends Controller
             ->take(3)                  
             ->get();
 
-        // 2. Ambil data master buat ngisi dropdown pencarian di halaman depan biar dinamis
+        // 2. Ambil data master buat ngisi dropdown pencarian
         $categories = \App\Models\Category::all();
         $experiences = \App\Models\Experience::all();
 
@@ -32,7 +32,7 @@ class LowonganController extends Controller
     {
         $query = Lowongan::with('category')
             ->where('status', 'aktif') 
-            ->whereDate('deadline', '>=', \Carbon\Carbon::today());
+            ->whereDate('deadline', '>=', Carbon::today());
 
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');
@@ -59,14 +59,12 @@ class LowonganController extends Controller
     public function show($slug)
     {
         // =========================================================================
-        // LOGIKA ANTI-TEMBAK: Kunci pintu pakai firstOrFail()
-        // Cuma cari berdasarkan SLUG, Status AKTIF, dan Deadline BELUM LEWAT
+        // LOGIKA BARU: Cuma cari berdasarkan SLUG (Tanpa filter aktif/deadline)
+        // Biar kalau loker ditutup, halamannya tetep kebuka dan gak 404 Not Found
         // =========================================================================
         $lowongan = Lowongan::with('category')
             ->where('slug', $slug)
-            ->where('status', 'aktif')
-            ->whereDate('deadline', '>=', Carbon::today())
-            ->firstOrFail(); // Kalau senior masukin ID angka, dia mental ke 404
+            ->firstOrFail();
 
         // =========================================================================
         // LOGIKA CEK STATUS PELAMAR
@@ -89,11 +87,16 @@ class LowonganController extends Controller
             }
         }
         
+        // =========================================================================
+        // CEK APAKAH LOWONGAN SUDAH DITUTUP (Buat ngatur tombol di View)
+        // =========================================================================
+        $isClosed = $lowongan->status !== 'aktif' || Carbon::parse($lowongan->deadline)->isBefore(Carbon::today());
+
         // Cek darimana request berasal (Halaman Pelamar atau Publik)
         if (request()->is('dashboard/*') || request()->is('lowongan/*')) {
-            return view('pelamar.show_loker', compact('lowongan', 'hasActiveApplication', 'isRejected'));
+            return view('pelamar.show_loker', compact('lowongan', 'hasActiveApplication', 'isRejected', 'isClosed'));
         }
 
-        return view('detail-career', compact('lowongan', 'hasActiveApplication', 'isRejected'));
+        return view('detail-career', compact('lowongan', 'hasActiveApplication', 'isRejected', 'isClosed'));
     }
 }
