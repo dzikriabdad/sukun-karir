@@ -48,9 +48,9 @@
                     <table class="w-full text-left table-auto">
                         <thead>
                             <tr class="bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">
-                                <th class="px-6 py-5">Posisi Pekerjaan</th>
-                                <th class="px-6 py-5 text-center">Tahapan Seleksi</th>
-                                <th class="px-6 py-5 text-center w-32">Aksi</th> {{-- Lebar dikunci w-32 --}}
+                                <th class="px-6 py-5 whitespace-nowrap">Posisi Pekerjaan</th>
+                                <th class="px-6 py-5 text-center whitespace-nowrap">Tahapan Seleksi</th>
+                                <th class="px-6 py-5 text-center w-32 whitespace-nowrap">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50">
@@ -75,12 +75,13 @@
                                         ];
                                         $current = $statusConfig[$app->status] ?? ['label' => $app->status, 'color' => 'bg-gray-100'];
                                     @endphp
-                                    <span class="whitespace-nowrap inline-block px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest {{ $current['color'] }}">
+                                    <span class="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest {{ $current['color'] }}">
                                         {{ $current['label'] }}
                                     </span>
                                 </td>
                                 <td class="px-6 py-6 text-center">
-                                    <a href="{{ route('career.detail', $app->lowongan->id) }}" class="text-xs font-black text-blue-900 hover:text-blue-700 underline underline-offset-4 uppercase tracking-tighter whitespace-nowrap">
+                                    {{-- INI YANG GUA BENERIN JADI PAKAI SLUG --}}
+                                    <a href="{{ route('career.detail', $app->lowongan->slug) }}" class="text-xs font-black text-blue-900 hover:text-blue-700 underline underline-offset-4 uppercase tracking-tighter whitespace-nowrap">
                                         Detail Loker
                                     </a>
                                 </td>

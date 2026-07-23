@@ -3,7 +3,7 @@
 @section('title', 'Sukun Karir - Beranda')
 
 @section('content')
-    {{-- HERO SECTION FULL WIDTH (Bebas Gap Putih, Mentok Kiri Kanan) --}}
+    {{-- HERO SECTION FULL WIDTH --}}
     <section class="w-full pt-32 pb-20 bg-cover bg-center bg-blue-900 min-h-[450px] lg:min-h-[600px] flex items-center mt-0 relative z-0">
       <div class="max-w-screen-xl mx-auto w-full px-5 relative z-10">
         <div class="grid grid-cols-1 lg:grid-cols-2 justify-between items-center w-full gap-10">
@@ -18,39 +18,20 @@
             </p>
           </div>
           
-          {{-- SLIDER FOTO DINAMIS (.jpeg) --}}
+          {{-- SLIDER FOTO DINAMIS (Anti Ilang) --}}
           <div class="flex justify-center lg:justify-end items-center mt-10 lg:mt-0 relative z-10">
-             <div class="swiper heroSwiper w-full max-w-[380px] h-[300px] lg:h-[450px] rounded-[2rem] hidden md:block border border-white/20 shadow-2xl overflow-hidden group bg-white/5">
+             <div class="swiper heroSwiper w-full max-w-[380px] h-[300px] lg:h-[450px] rounded-[2rem] hidden md:block border border-white/20 shadow-2xl overflow-hidden group bg-white/10">
                 <div class="swiper-wrapper">
-                    <div class="swiper-slide flex items-center justify-center p-4">
-                        <img src="{{ asset('images/fotho1.jpeg') }}" alt="Foto Sukun 1" class="w-full h-full object-cover rounded-[1.5rem]" />
+                    @for($i=1; $i<=8; $i++)
+                    <div class="swiper-slide flex items-center justify-center">
+                        <img src="{{ asset('images/fotho'.$i.'.jpeg') }}" alt="Foto Sukun {{ $i }}" class="w-full h-full object-cover" />
                     </div>
-                    <div class="swiper-slide flex items-center justify-center p-4">
-                        <img src="{{ asset('images/fotho2.jpeg') }}" alt="Foto Sukun 2" class="w-full h-full object-cover rounded-[1.5rem]" />
-                    </div>
-                    <div class="swiper-slide flex items-center justify-center p-4">
-                        <img src="{{ asset('images/fotho3.jpeg') }}" alt="Foto Sukun 3" class="w-full h-full object-cover rounded-[1.5rem]" />
-                    </div>
-                    <div class="swiper-slide flex items-center justify-center p-4">
-                        <img src="{{ asset('images/fotho4.jpeg') }}" alt="Foto Sukun 4" class="w-full h-full object-cover rounded-[1.5rem]" />
-                    </div>
-                    <div class="swiper-slide flex items-center justify-center p-4">
-                        <img src="{{ asset('images/fotho5.jpeg') }}" alt="Foto Sukun 5" class="w-full h-full object-cover rounded-[1.5rem]" />
-                    </div>
-                    <div class="swiper-slide flex items-center justify-center p-4">
-                        <img src="{{ asset('images/fotho6.jpeg') }}" alt="Foto Sukun 6" class="w-full h-full object-cover rounded-[1.5rem]" />
-                    </div>
-                    <div class="swiper-slide flex items-center justify-center p-4">
-                        <img src="{{ asset('images/fotho7.jpeg') }}" alt="Foto Sukun 7" class="w-full h-full object-cover rounded-[1.5rem]" />
-                    </div>
-                    <div class="swiper-slide flex items-center justify-center p-4">
-                        <img src="{{ asset('images/fotho8.jpeg') }}" alt="Foto Sukun 8" class="w-full h-full object-cover rounded-[1.5rem]" />
-                    </div>
+                    @endfor
                 </div>
                 
                 {{-- Navigasi Panah --}}
-                <div class="swiper-button-next text-white opacity-0 group-hover:opacity-100 transition-opacity !w-8 !h-8 after:text-xs bg-black/30 rounded-full"></div>
-                <div class="swiper-button-prev text-white opacity-0 group-hover:opacity-100 transition-opacity !w-8 !h-8 after:text-xs bg-black/30 rounded-full"></div>
+                <div class="swiper-button-next text-white opacity-0 group-hover:opacity-100 transition-opacity !w-8 !h-8 after:text-[10px] bg-black/30 rounded-full"></div>
+                <div class="swiper-button-prev text-white opacity-0 group-hover:opacity-100 transition-opacity !w-8 !h-8 after:text-[10px] bg-black/30 rounded-full"></div>
                 
                 {{-- Pagination Titik --}}
                 <div class="swiper-pagination !bottom-4"></div>
@@ -60,12 +41,12 @@
       </div>
     </section>
 
-    {{-- KOTAK PENCARIAN REVISI LABEL --}}
-    <section class="max-w-screen-xl mx-auto px-5 -mt-12 relative z-10">
-      <div class="bg-white rounded-2xl px-6 py-6 shadow-xl border border-gray-100 relative z-30">
+    {{-- KOTAK PENCARIAN --}}
+    <section class="max-w-screen-xl mx-auto px-5 -mt-12 relative z-30">
+      <div class="bg-white rounded-2xl px-6 py-6 shadow-xl border border-gray-100">
         <form action="{{ route('careers.index') }}" method="GET" class="flex flex-col md:flex-row items-center gap-4">
           
-          {{-- Dropdown Level (Fresh Graduate, Experienced, dll) --}}
+          {{-- Dropdown Level --}}
           <div class="w-full md:w-auto flex-1">
             <label class="text-[10px] font-bold text-slate-400 uppercase ml-1 mb-1 block">Level Pengalaman</label>
             <select name="kategori" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 font-medium text-slate-700 cursor-pointer">
@@ -76,10 +57,10 @@
             </select>
           </div>
 
-          {{-- Dropdown Bidang Pekerjaan (IT, Produksi, dll) --}}
+          {{-- Dropdown Bidang Pekerjaan --}}
           <div class="w-full md:w-auto flex-1">
             <label class="text-[10px] font-bold text-slate-400 uppercase ml-1 mb-1 block">Bidang Pekerjaan</label>
-            <select name="bagian" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 font-medium text-slate-700 cursor-pointer">
+            <select name="departemen" class="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 font-medium text-slate-700 cursor-pointer">
               <option value="" selected>Semua Bidang</option>
               @foreach($categories as $cat)
                   <option value="{{ $cat->id }}">{{ $cat->name }}</option>
@@ -99,7 +80,7 @@
     </section>
 
     {{-- LOWONGAN TERBARU --}}
-    <section class="max-w-screen-xl mx-auto px-5 mt-16 mb-8 relative z-0">
+    <section class="max-w-screen-xl mx-auto px-5 mt-16 mb-8 relative">
       <div class="flex flex-row justify-center lg:justify-start items-center">
         <h1 class="text-3xl font-extrabold text-blue-900">
           Lowongan Terbaru
@@ -107,10 +88,10 @@
       </div>
     </section>
 
-    <section class="mb-10 relative z-0">
+    <section class="mb-10">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-screen-xl mx-auto px-5">
         @forelse($lowongans as $item)
-        <a href="{{ route('career.detail', $item->id) }}" class="block rounded-[1.5rem] p-6 shadow-sm bg-white hover:bg-blue-50/50 hover:-translate-y-1 transition-all duration-300 border border-gray-100 hover:border-blue-200 flex flex-col h-full cursor-pointer hover:shadow-md">
+        <a href="{{ route('career.detail', $item->slug) }}" class="block rounded-[1.5rem] p-6 shadow-sm bg-white hover:bg-blue-50/50 hover:-translate-y-1 transition-all duration-300 border border-gray-100 hover:border-blue-200 flex flex-col h-full cursor-pointer hover:shadow-md">
           <h2 class="text-xl font-black text-slate-800 hover:text-blue-900 uppercase tracking-tight">
             {{ $item->title }}
           </h2>
@@ -149,8 +130,8 @@
       </div>
     </section>
 
-    {{-- SECTION TENTANG KAMI (VERSI FULL LENGKAP) --}}
-    <section class="mt-24 py-20 bg-cover bg-center relative z-0" style="background-image: url('{{ asset('images/banerskn3.png') }}');">
+    {{-- SECTION TENTANG KAMI --}}
+    <section class="mt-24 py-20 bg-cover bg-center relative" style="background-image: url('{{ asset('images/banerskn3.png') }}');">
       <div class="max-w-screen-xl mx-auto bg-white/95 p-8 lg:p-12 rounded-[2.5rem] shadow-xl backdrop-blur-md mx-5">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div class="flex justify-center h-full relative">
@@ -158,7 +139,7 @@
             <img src="{{ asset('images/banerskn.png') }}" alt="Kantor Pusat Sukun" 
                  class="w-full h-64 lg:h-96 object-cover object-right rounded-[2rem] shadow-lg border-4 border-white relative z-10" />
           </div>
-          <div class="text-justify relative z-10">
+          <div class="text-justify">
             <h1 class="text-3xl lg:text-4xl font-extrabold text-blue-900 mb-6 border-b-4 border-amber-400 inline-block pb-2">Tentang Kami</h1>
             <p class="text-base text-slate-700 leading-relaxed font-medium">
               PT. Sukun Wartono Indonesia didirikan dengan sebuah filosofi yang mempercayai bahwa sumber daya manusia adalah faktor terpenting dalam mengembangkan kemajuan perusahaan. Hal ini lah yang membuat kami selalu berupaya menciptakan lingkungan kerja yang aman, nyaman, dan produktif bagi seluruh karyawan kami.
@@ -170,49 +151,19 @@
         </div>
       </div>
     </section>
-
-    {{-- BANNER BAWAH --}}
-    <section class="my-24 relative z-0">
-      <div class="max-w-screen-xl mx-auto px-5">
-        <div class="bg-blue-900 bg-cover bg-center overflow-hidden rounded-[2.5rem] p-10 lg:p-16 relative shadow-2xl" style="background-image: url('https://static.vecteezy.com/system/resources/previews/014/031/972/non_2x/abstract-modern-wave-graphic-background-blue-background-abstract-wave-background-design-dark-poster-blue-background-illustration-vector.jpg');">
-          <div class="absolute inset-0 bg-blue-900/60 mix-blend-multiply"></div>
-          <div class="flex flex-col lg:flex-row justify-between items-center gap-8 relative z-10">
-            <h4 class="text-3xl lg:text-4xl font-extrabold text-white lg:basis-2/3 text-center lg:text-left drop-shadow-lg leading-tight">
-              Ayo Bergabung dan Bangun Masa Depanmu Bersama Kami!
-            </h4>
-            <a href="/careers" class="bg-amber-400 text-amber-900 rounded-xl px-10 py-5 font-black uppercase tracking-widest hover:bg-amber-300 transition whitespace-nowrap shadow-xl hover:-translate-y-1">
-              Temukan Karirmu
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
 @endsection
 
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         if (document.querySelector(".heroSwiper")) {
-            // Hancurkan instance lama kalau ada bentrok
-            if (document.querySelector('.heroSwiper').swiper) {
-                document.querySelector('.heroSwiper').swiper.destroy(true, true);
-            }
-
             const swiper = new Swiper(".heroSwiper", {
-                spaceBetween: 0,
-                effect: "fade",
-                fadeEffect: { 
-                    crossFade: true // BIAR TIDAK BLANK
-                },
                 loop: true,
-                speed: 1000,
+                speed: 800,
                 autoplay: {
                     delay: 4000, 
                     disableOnInteraction: false,
                 },
-                observer: true,
-                observeParents: true,
-                watchSlidesProgress: true,
                 pagination: {
                     el: ".swiper-pagination",
                     clickable: true,

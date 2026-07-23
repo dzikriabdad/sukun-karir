@@ -117,7 +117,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-bold text-slate-700 mb-2">Pendidikan Terakhir *</label>
-                                <select name="last_education" required class="w-full px-4 py-3.5 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                                <select name="last_education" id="lastEducation" required class="w-full px-4 py-3.5 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
                                     @php $edus = ['SD', 'SMP', 'SMA/SMK', 'D3', 'S1/D4', 'S2', 'S3']; @endphp
                                     <option value="" disabled {{ !$isEdit ? 'selected' : '' }}>Pilih Tingkat...</option>
                                     @foreach($edus as $edu)
@@ -133,9 +133,11 @@
                                 <label class="block text-sm font-bold text-slate-700 mb-2">Jurusan *</label>
                                 <input type="text" name="major" value="{{ old('major', $cv->major ?? '') }}" required placeholder="Contoh: Teknik Informatika" class="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                             </div>
+                            
+                            {{-- Ganti Label IPK / GPA --}}
                             <div>
-                                <label class="block text-sm font-bold text-slate-700 mb-2">IPK / GPA *</label>
-                                <input type="text" name="gpa" value="{{ old('gpa', $cv->gpa ?? '') }}" required placeholder="Contoh: 3.50" class="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                                <label class="block text-sm font-bold text-slate-700 mb-2" id="labelGpa">IPK / GPA *</label>
+                                <input type="number" step="0.01" name="gpa" id="inputGpa" value="{{ old('gpa', $cv->gpa ?? '') }}" required placeholder="Contoh: 3.50" class="w-full px-4 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
                             </div>
                         </div>
                     </div>
@@ -234,7 +236,7 @@
 @endif
 
 <script>
-    // Menampilkan Nama File PDF saat diupload
+    // SCRIPT 1: Menampilkan Nama File PDF saat diupload
     document.getElementById('cvInput').addEventListener('change', function(e) {
         if (e.target.files.length > 0) {
             const fileName = e.target.files[0].name;
@@ -242,6 +244,41 @@
             displayText.innerText = "File Terpilih: " + fileName;
             displayText.classList.replace('text-blue-900', 'text-green-600');
         }
+    });
+
+    // SCRIPT 2: Fitur Dinamis Ubah Label IPK <-> Rata-rata Nilai berdasarkan Dropdown Pendidikan
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownEdu = document.getElementById('lastEducation');
+        const labelGpa = document.getElementById('labelGpa');
+        const inputGpa = document.getElementById('inputGpa');
+        
+        // Array jenjang kuliah (yang butuh IPK skala 4)
+        const jenjangKuliah = ['D3', 'S1/D4', 'S2', 'S3'];
+
+        function updateGpaField() {
+            const selectedVal = dropdownEdu.value;
+            
+            if (!selectedVal) return; // kalau belum milih apa-apa biarin aja
+
+            // Jika yang dipilih adalah jenjang kuliah (D3 ke atas)
+            if (jenjangKuliah.includes(selectedVal)) {
+                labelGpa.innerText = 'IPK / GPA *';
+                inputGpa.placeholder = 'Contoh: 3.50';
+                inputGpa.max = "4.00"; 
+            } 
+            // Jika yang dipilih adalah sekolah (SMA/SMK, SMP, SD)
+            else {
+                labelGpa.innerText = 'Rata-rata Nilai Ijazah *';
+                inputGpa.placeholder = 'Contoh: 85.50';
+                inputGpa.max = "100.00";
+            }
+        }
+
+        // Panggil fungsi ini saat pertama kali halaman dimuat (berguna kalau mode edit/sudah ada valuenya)
+        updateGpaField();
+
+        // Panggil fungsi ini setiap kali user mengganti pilihan di dropdown
+        dropdownEdu.addEventListener('change', updateGpaField);
     });
 </script>
 @endsection

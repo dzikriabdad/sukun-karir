@@ -118,6 +118,10 @@ class PelamarController extends Controller
      */
     public function storeCv(Request $request)
     {
+        // LOGIKA DINAMIS: Cek jenjang buat nentuin max nilai
+        $jenjangKuliah = ['D3', 'S1/D4', 'S2', 'S3'];
+        $maxNilai = in_array($request->last_education, $jenjangKuliah) ? 4.00 : 100.00;
+
         $request->validate([
             'phone_number'    => 'required|numeric',
             'place_of_birth'  => 'required|string',
@@ -128,7 +132,7 @@ class PelamarController extends Controller
             'last_education'  => 'required|string',
             'university'      => 'required|string',
             'major'           => 'required|string',
-            'gpa'             => 'required|numeric|between:0,4.00',
+            'gpa'             => "required|numeric|between:0,$maxNilai",
             'address'         => 'required|string',
             'experience'      => 'required|string',
             'file_cv'         => 'required|mimes:pdf|max:2048',
@@ -189,6 +193,10 @@ class PelamarController extends Controller
     {
         $cv = Auth::user()->cv;
 
+        // LOGIKA DINAMIS: Cek jenjang buat nentuin max nilai
+        $jenjangKuliah = ['D3', 'S1/D4', 'S2', 'S3'];
+        $maxNilai = in_array($request->last_education, $jenjangKuliah) ? 4.00 : 100.00;
+
         $request->validate([
             'phone_number'    => 'required|numeric',
             'place_of_birth'  => 'required|string',
@@ -199,7 +207,7 @@ class PelamarController extends Controller
             'last_education'  => 'required|string',
             'university'      => 'required|string',
             'major'           => 'required|string',
-            'gpa'             => 'required|numeric|between:0,4.00',
+            'gpa'             => "required|numeric|between:0,$maxNilai",
             'address'         => 'required|string',
             'experience'      => 'required|string',
             'file_cv'         => 'nullable|mimes:pdf|max:2048', 
