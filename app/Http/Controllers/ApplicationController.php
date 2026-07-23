@@ -28,10 +28,10 @@ class ApplicationController extends Controller
         // A. AMBIL DATA LOWONGAN
         $lowongan = Lowongan::findOrFail($lowonganId);
 
-        // B. VALIDASI FORM
+// B. VALIDASI FORM
         $request->validate([
-            'application_reason' => 'required|string',
-            'commitment'         => 'required|string',
+            'application_reason' => 'required|string|max:3000', // Tambahkan max:3000 sekalian agar aman
+            'commitment'         => 'required|string|max:3000', // <-- Tambahkan max:3000 di sini
             'relocation_ready'   => 'required|boolean',
             'expected_salary'    => 'required|numeric',
         ]);
