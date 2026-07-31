@@ -231,6 +231,23 @@
                 </div>
             @endif
         </div>
+        @if($applications->isEmpty())
+                <div class="py-24 text-center">
+                    <div class="text-slate-300 mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <p class="text-slate-400 font-bold">Tidak ada data pelamar yang sesuai dengan pencarian atau filter kamu.</p>
+                </div>
+            @endif
+        </div> {{-- BATAS AKHIR KOTAK PUTIH TABEL --}}
+
+        {{-- penambahan pagenation di sini --}}
+        <div class="mt-8">
+            {{ $applications->links() }}
+        </div>
+
+    </div> {{-- BATAS AKHIR max-w-screen-xl --}}
+</div> {{-- BATAS AKHIR pt-32 pb-20 --}}
     </div>
 </div>
 

@@ -180,7 +180,9 @@ class AdminController extends Controller
             });
         }
 
-        $applications = $query->latest()->get();
+        // penambahan pagination agar tidak terlalu banyak data yang ditampilkan sekaligus
+        $applications = $query->latest()->paginate(10)->withQueryString();
+        
         return view('admin.applications.index', compact('applications', 'lowongans'));
     }
 
