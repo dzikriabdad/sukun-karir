@@ -38,11 +38,14 @@
                         Cek Status di Dashboard
                     </a>
                 </div>
-            @else
+           @else
                 {{-- JIKA PELAMAR BELUM DAFTAR / SUDAH DITOLAK (BOLEH MENGISI FORM) --}}
                 {{-- PASTIKAN ROUTE DI BAWAH INI SESUAI DENGAN web.php LU --}}
                 <form action="{{ route('pelamar.apply.submit', $lowongan->id) }}" method="POST">
                     @csrf
+                    
+                    {{-- TAMBAHKAN BARIS INI UNTUK MENYIMPAN SOURCE (JOBFAIR) --}}
+                    <input type="hidden" name="source" value="{{ $source }}">
                     
                     <div class="mb-6">
                         <label class="block mb-2 text-sm font-bold text-gray-700">Mengapa Anda tertarik melamar posisi ini?</label>

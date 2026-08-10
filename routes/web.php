@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PelamarController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ApplicantDetailController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +17,16 @@ Route::get('/', [LowonganController::class, 'index'])->name('home');
 Route::get('/careers', [LowonganController::class, 'allCareers'])->name('careers.index');
 Route::get('/career-detail/{slug}', [LowonganController::class, 'show'])->name('career.detail');
 Route::get('/berita', fn() => view('berita'))->name('berita');
+Route::get('/jobfair/{id}', function (Request $request, $id) {
+    // 1. Simpan sumbernya ke memori (session)
+    session(['sumber_lamaran' => $request->query('source', 'Jobfair')]);
+    
+    // 2. Simpan link tujuan aslinya (biar habis register/login nggak nyasar)
+    session(['redirect_setelah_login' => route('pelamar.apply', $id)]);
+    
+    // 3. Lempar ke halaman login
+    return redirect()->route('login')->with('info', 'Silakan login atau daftar akun terlebih dahulu.');
+});
 
 /*
 |--------------------------------------------------------------------------

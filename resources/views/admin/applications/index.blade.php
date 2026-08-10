@@ -91,34 +91,53 @@
                     <tbody class="divide-y divide-gray-50">
                         @foreach($applications as $app)
                         <tr class="hover:bg-blue-50/40 transition">
-                            {{-- 1. Data Pelamar --}}
+                           {{-- 1. Data Pelamar --}}
                             <td class="px-8 py-6 whitespace-nowrap">
                                 <a href="{{ route('admin.applications.show', $app->id) }}" class="font-bold text-blue-900 hover:text-blue-700 hover:underline transition block">
                                     {{ $app->user->name }}
                                 </a>
                                 <div class="text-[11px] text-slate-400 font-medium mb-3">{{ $app->user->email }}</div>
-                                <div class="flex gap-2">
-                                    <button onclick="openModal('modal-{{ $app->id }}')" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-600 font-black py-1.5 px-3 rounded-lg flex items-center gap-1 transition uppercase tracking-widest">
-                                        alasan melamar
+                                
+                                {{-- KUMPULAN TOMBOL --}}
+                                <div class="flex gap-2 mt-2">
+                                    
+                                    {{-- TOMBOL ALASAN MELAMAR --}}
+                                   <button onclick="openModal('modal-{{ $app->id }}')" class="text-[10px] bg-blue-50 hover:bg-slate-300 border border-slate-300 text-slate-800 font-black py-1.5 px-3 rounded-lg flex items-center gap-1.5 transition uppercase tracking-widest shadow-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                        Alasan Melamar
                                     </button>
+
+                                    {{-- TOMBOL BUKA CV --}}
                                     @if($app->user?->cv?->file_cv) 
-                                        <a href="{{ asset('uploads/cv/' . $app->user->cv->file_cv) }}" target="_blank" class="text-[10px] bg-blue-50 hover:bg-blue-100 text-blue-700 font-black py-1.5 px-3 rounded-lg flex items-center gap-1 transition uppercase tracking-widest">
+                                        <a href="{{ asset('uploads/cv/' . $app->user->cv->file_cv) }}" target="_blank" class="text-[10px] bg-blue-50 hover:bg-blue-100 border border-blue-100 text-blue-700 font-black py-1.5 px-3 rounded-lg flex items-center gap-1 transition uppercase tracking-widest">
                                             BUKA CV
                                         </a>
                                     @else
-                                        <button disabled class="text-[10px] bg-gray-50 text-gray-400 font-black py-1.5 px-3 rounded-lg flex items-center gap-1 uppercase tracking-widest cursor-not-allowed" title="Pelamar belum upload CV">
+                                        <button disabled class="text-[10px] bg-gray-50 text-gray-400 border border-gray-100 font-black py-1.5 px-3 rounded-lg flex items-center gap-1 uppercase tracking-widest cursor-not-allowed" title="Pelamar belum upload CV">
                                             NO CV
                                         </button>
                                     @endif
+                                    
                                 </div>
                             </td>
 
-                            {{-- 2. Posisi & Tanggal Lamar --}}
+                          {{-- 2. Posisi & Tanggal Lamar --}}
                             <td class="px-8 py-6 whitespace-nowrap">
                                 <span class="text-sm font-bold text-blue-900 block truncate max-w-[200px]" title="{{ $app->lowongan->title }}">{{ $app->lowongan->title }}</span>
                                 <span class="text-[10px] text-slate-400 font-bold uppercase tracking-tight">
                                     Diterima: {{ $app->created_at->format('d M Y | H:i') }}
                                 </span>
+                                
+                                {{-- ========================================================= --}}
+                                {{-- LABEL KHUSUS JOBFAIR --}}
+                                {{-- ========================================================= --}}
+                                @if(isset($app->source) && $app->source !== 'website')
+                                    <div class="mt-2">
+                                        <span class="bg-yellow-300 text-yellow-900 text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-[0.1em] shadow-sm inline-flex items-center gap-1">
+                                            📢 {{ str_replace('_', ' ', $app->source) }}
+                                        </span>
+                                    </div>
+                                @endif
                             </td>
 
                             {{-- 3. Ekspektasi Gaji --}}

@@ -17,6 +17,21 @@ class PelamarController extends Controller
      */
     public function dashboard()
     {
+        // Cek apakah ada sisa rute Jobfair di memori
+        if (session()->has('redirect_setelah_login')) {
+            $urlTujuan = session('redirect_setelah_login');
+            
+            // JIKA BELUM PUNYA CV: Lempar ke form buat CV, JANGAN HAPUS session-nya dulu!
+            if (!Auth::user()->cv) {
+                return redirect()->route('pelamar.create_cv')
+                                 ->with('info', 'Hampir selesai! Silakan lengkapi CV Anda terlebih dahulu untuk melanjutkan pendaftaran.');
+            }
+
+            // JIKA SUDAH PUNYA CV: Hapus memorinya, lalu lempar ke form lamaran
+            session()->forget('redirect_setelah_login');
+            return redirect($urlTujuan); 
+        }
+
         $user = Auth::user();
         
         $applications = Application::where('user_id', $user->id)
@@ -32,26 +47,39 @@ class PelamarController extends Controller
      * 2. TAMPILKAN HALAMAN FORMULIR LAMARAN
      * =================================================================
      */
-    public function showApplyForm($id)
+    public function showApplyForm(Request $request, $id)
     {
+        // 1. Simpan parameter 'source' ke session (memori sementara) kalau ada
+        if ($request->has('source')) {
+            session(['sumber_lamaran' => $request->query('source')]);
+        }
+
+        // 2. CEGAT DI SINI! Kalau belum punya CV, langsung lempar ke form CV 
+        // sebelum dia capek-capek ngisi form lamaran.
+        if (!Auth::user()->cv) {
+            return redirect()->route('pelamar.create_cv')
+                             ->with('info', 'Hampir selesai! Isi CV kamu dulu ya sebelum melamar.');
+        }
+
         $lowongan = Lowongan::findOrFail($id);
         
-        // LOGIKA FINAL: Cek apakah pelamar masih punya lamaran yang SEDANG DIPROSES
-        // Kalau statusnya udah 'rejected', ini bakal false dan form lamaran terbuka!
         $hasActiveApplication = Application::where('user_id', Auth::id())
                              ->where('lowongan_id', $id)
                              ->where('status', '!=', 'rejected') 
                              ->exists();
                                     
-        return view('pelamar.apply', compact('lowongan', 'hasActiveApplication'));
+        // 3. Ambil data sumber dari session, kalau kosong jadikan 'website'
+        $source = session('sumber_lamaran', 'website'); 
+
+        return view('pelamar.apply', compact('lowongan', 'hasActiveApplication', 'source'));
     }
 
-    /**
+   /**
      * =================================================================
      * 3. PROSES MELAMAR PEKERJAAN (APPLY JOB)
      * =================================================================
      */
-    public function applyJob(Request $request, $id) 
+   public function applyJob(Request $request, $id) 
     {
         if (!Auth::check()) {
             return redirect()->route('login')
@@ -59,11 +87,6 @@ class PelamarController extends Controller
         }
 
         $user = Auth::user();
-
-        if (!$user->cv) {
-            return redirect()->route('pelamar.create_cv')
-                             ->with('info', 'Hampir selesai! Isi CV kamu dulu ya sebelum melamar.');
-        }
 
         $request->validate([
             'application_reason' => 'required|string',
@@ -78,25 +101,52 @@ class PelamarController extends Controller
             return back()->with('error', 'Maaf, lowongan ini sudah ditutup.');
         }
 
-        // PROTEKSI GANDA SAAT SIMPAN: Pastikan tidak ada lamaran aktif (kecuali yang udah rejected)
-        $hasActiveApplication = Application::where('user_id', $user->id)
-                             ->where('lowongan_id', $id)
-                             ->where('status', '!=', 'rejected')
-                             ->exists();
+        // Cari apakah pelamar sudah punya riwayat lamaran di posisi ini
+        $existingApplication = Application::where('user_id', $user->id)
+                                          ->where('lowongan_id', $id)
+                                          ->first();
         
-        if ($hasActiveApplication) {
-            return back()->with('error', 'Gagal! Kamu masih memiliki lamaran yang sedang diproses di posisi ini.');
+        // Kalau riwayat lamaran ada, cek statusnya
+        if ($existingApplication) {
+            // Jika statusnya BUKAN rejected/ditolak, berarti masih diproses. Larang lamar lagi!
+            if ($existingApplication->status !== 'rejected' && $existingApplication->status !== 'Tolak Lamaran') {
+                return back()->with('error', 'Gagal! Kamu masih memiliki lamaran yang sedang diproses di posisi ini.');
+            }
         }
 
-        Application::create([
-            'user_id'            => $user->id,
-            'lowongan_id'        => $id,
-            'application_reason' => $request->application_reason,
-            'commitment'         => $request->commitment,
-            'relocation_ready'   => $request->relocation_ready ?? 0,
-            'expected_salary'    => $request->expected_salary ?? 0,
-            'status'             => 'screening', 
-        ]);
+        // Ambil source dari memori
+        $sumberLamaran = session('sumber_lamaran', 'website');
+
+        if ($existingApplication) {
+            // ====================================================================
+            // JIKA SUDAH PERNAH DITOLAK: Kita UPDATE datanya (jangan di-create)
+            // ====================================================================
+            $existingApplication->update([
+                'application_reason' => $request->application_reason,
+                'commitment'         => $request->commitment,
+                'relocation_ready'   => $request->relocation_ready ?? 0,
+                'expected_salary'    => $request->expected_salary ?? 0,
+                'status'             => 'screening', // Kembalikan ke proses awal
+                'source'             => $sumberLamaran, // Simpan source terbaru
+            ]);
+        } else {
+            // ====================================================================
+            // JIKA BELUM PERNAH MELAMAR SAMA SEKALI: Kita CREATE data baru
+            // ====================================================================
+            Application::create([
+                'user_id'            => $user->id,
+                'lowongan_id'        => $id,
+                'application_reason' => $request->application_reason,
+                'commitment'         => $request->commitment,
+                'relocation_ready'   => $request->relocation_ready ?? 0,
+                'expected_salary'    => $request->expected_salary ?? 0,
+                'status'             => 'screening', 
+                'source'             => $sumberLamaran, 
+            ]);
+        }
+
+        // HAPUS SESSION: Biar kalau dia ngelamar lowongan lain, statusnya kembali normal
+        session()->forget('sumber_lamaran');
 
         return redirect()->route('pelamar.dashboard')->with('success', 'Lamaran berhasil dikirim!');
     }
@@ -160,6 +210,15 @@ class PelamarController extends Controller
                 'experience'      => $request->experience,
                 'file_cv'         => $fileName,
             ]);
+
+            // --- TAMBAHKAN KODE INI ---
+            // Jika dia datang dari link Jobfair, setelah bikin CV langsung lempar ke form lamaran!
+            if (session()->has('redirect_setelah_login')) {
+                $urlTujuan = session('redirect_setelah_login');
+                session()->forget('redirect_setelah_login');
+                return redirect($urlTujuan)->with('success', 'Profil dan CV Berhasil Disimpan! Silakan lanjutkan lamaran.');
+            }
+            // ---------------------------
 
             return redirect()->route('pelamar.dashboard')->with('success', 'Profil dan CV Berhasil Disimpan!');
 
