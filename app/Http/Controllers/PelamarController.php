@@ -17,7 +17,7 @@ class PelamarController extends Controller
      */
     public function dashboard()
     {
-        // Cek apakah ada sisa rute Jobfair di memori
+        // Cek apakah ada sisa rute Jobfair / link detail di memori
         if (session()->has('redirect_setelah_login')) {
             $urlTujuan = session('redirect_setelah_login');
             
@@ -30,6 +30,12 @@ class PelamarController extends Controller
             // JIKA SUDAH PUNYA CV: Hapus memorinya, lalu lempar ke form lamaran
             session()->forget('redirect_setelah_login');
             return redirect($urlTujuan); 
+        }
+
+        // TAMBAHAN AMAN: Kalau masuk dari link general (/?source=...) tapi belum punya CV
+        if (session()->has('sumber_lamaran') && !Auth::user()->cv) {
+            return redirect()->route('pelamar.create_cv')
+                             ->with('info', 'Selamat datang! Silakan lengkapi CV Anda terlebih dahulu sebelum melamar pekerjaan.');
         }
 
         $user = Auth::user();
@@ -211,14 +217,12 @@ class PelamarController extends Controller
                 'file_cv'         => $fileName,
             ]);
 
-            // --- TAMBAHKAN KODE INI ---
-            // Jika dia datang dari link Jobfair, setelah bikin CV langsung lempar ke form lamaran!
+            // Jika dia datang dengan memori lemparan, eksekusi pantulannya!
             if (session()->has('redirect_setelah_login')) {
                 $urlTujuan = session('redirect_setelah_login');
                 session()->forget('redirect_setelah_login');
                 return redirect($urlTujuan)->with('success', 'Profil dan CV Berhasil Disimpan! Silakan lanjutkan lamaran.');
             }
-            // ---------------------------
 
             return redirect()->route('pelamar.dashboard')->with('success', 'Profil dan CV Berhasil Disimpan!');
 

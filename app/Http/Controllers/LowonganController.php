@@ -10,13 +10,22 @@ use Carbon\Carbon;
 
 class LowonganController extends Controller
 {
-    public function index() 
+    public function index(Request $request) 
     {
+        // =========================================================================
+        // SOURCE DARI HALAMAN UTAMA (GENERAL LINK JOBFAIR)
+        // =========================================================================
+        if ($request->has('source')) {
+            session(['sumber_lamaran' => $request->query('source')]);
+            session()->save(); // Paksa simpan ke session
+        }
+        // =========================================================================
+
         $lowongans = Lowongan::with('category')
             ->where('status', 'aktif') 
             ->whereDate('deadline', '>=', Carbon::today()) 
             ->latest()                
-            ->take(3)                  
+            ->take(3)                 
             ->get();
 
         $categories = \App\Models\Category::all();
@@ -27,6 +36,12 @@ class LowonganController extends Controller
 
     public function allCareers(Request $request)
     {
+        // Tangkap juga source kalau mereka langsung mendarat di halaman list karir
+        if ($request->has('source')) {
+            session(['sumber_lamaran' => $request->query('source')]);
+            session()->save();
+        }
+
         $query = Lowongan::with('category')
             ->where('status', 'aktif') 
             ->whereDate('deadline', '>=', Carbon::today());

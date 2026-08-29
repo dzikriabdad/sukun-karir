@@ -6,17 +6,18 @@
 <div class="pt-32 pb-20 px-5 bg-gray-50 min-h-screen">
     <div class="max-w-screen-xl mx-auto">
         
+        {{-- Header Halaman --}}
         <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
             <div>
                 <h1 class="text-3xl font-extrabold text-blue-900">Manajemen Seleksi Pelamar</h1>
-                <p class="text-slate-600 mt-2">Kelola tahapan rekrutmen mulai dari Review hingga Kontrak Kerja.</p>
+                <p class="text-slate-600 mt-2">Kelola tahapan rekrutmen mulai dari peninjauan berkas hingga penawaran kerja.</p>
             </div>
             <div class="bg-blue-100 text-blue-800 px-5 py-3 rounded-2xl font-bold text-sm border border-blue-200 shadow-sm">
                 Total: {{ $applications->count() }} Lamaran
             </div>
         </div>
 
-        {{-- Pesan Sukses --}}
+        {{-- Notifikasi Sukses --}}
         @if(session('success'))
         <div class="mb-8 p-5 bg-green-50 border border-green-200 text-green-700 rounded-2xl flex items-center shadow-sm">
             <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -24,18 +25,17 @@
         </div>
         @endif
 
-        {{-- KOTAK FILTER & PENCARIAN --}}
+        {{-- Formulir Filter dan Pencarian Data --}}
         <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 mb-8">
-            {{-- GUA UBAH grid-cols-3 JADI grid-cols-4 BIAR MUAT --}}
             <form action="{{ route('admin.applications.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-5 items-end">
                 
-                {{-- Kolom Cari Nama --}}
+                {{-- Pencarian Berdasarkan Nama --}}
                 <div>
                     <label class="block mb-2 text-xs font-black text-slate-400 uppercase tracking-widest">Cari Nama</label>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Ketik nama pelamar..." class="bg-gray-50 border border-gray-200 text-sm rounded-xl block w-full p-3 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
                 </div>
 
-                {{-- Filter Posisi Lowongan --}}
+                {{-- Filter Berdasarkan Posisi --}}
                 <div>
                     <label class="block mb-2 text-xs font-black text-slate-400 uppercase tracking-widest">Posisi</label>
                     <select name="lowongan_id" class="bg-gray-50 border border-gray-200 text-sm rounded-xl block w-full p-3 focus:ring-blue-500 focus:border-blue-500 outline-none">
@@ -46,7 +46,7 @@
                     </select>
                 </div>
 
-                {{-- FITUR BARU: FILTER TAHAPAN --}}
+                {{-- Filter Berdasarkan Tahapan Seleksi --}}
                 <div>
                     <label class="block mb-2 text-xs font-black text-slate-400 uppercase tracking-widest">Tahapan</label>
                     <select name="status" class="bg-gray-50 border border-gray-200 text-sm rounded-xl block w-full p-3 focus:ring-blue-500 focus:border-blue-500 outline-none">
@@ -63,7 +63,7 @@
                     </select>
                 </div>
                 
-                {{-- Tombol Aksi --}}
+                {{-- Tombol Navigasi Pencarian --}}
                 <div class="flex gap-2">
                     <button type="submit" class="flex-1 bg-blue-900 text-white font-bold py-3 rounded-xl hover:bg-blue-800 transition shadow-lg shadow-blue-900/20 text-sm">
                         Cari
@@ -75,7 +75,7 @@
             </form>
         </div>
 
-        {{-- TABEL DATA PELAMAR --}}
+        {{-- Tabel Daftar Pelamar --}}
         <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-50 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
@@ -90,47 +90,70 @@
                     </thead>
                     <tbody class="divide-y divide-gray-50">
                         @foreach($applications as $app)
-                        <tr class="hover:bg-blue-50/40 transition">
-                           {{-- 1. Data Pelamar --}}
+                        
+                        {{-- Penentuan Warna Latar Baris Berdasarkan Status Keterbacaan CV --}}
+                        <tr class="{{ $app->cv_viewed_at ? 'bg-slate-100' : 'bg-white' }} hover:bg-slate-200 transition border-b border-gray-150">
+                            
+                            {{-- 1. Kolom Informasi Pelamar --}}
                             <td class="px-8 py-6 whitespace-nowrap">
-                                <a href="{{ route('admin.applications.show', $app->id) }}" class="font-bold text-blue-900 hover:text-blue-700 hover:underline transition block">
-                                    {{ $app->user->name }}
-                                </a>
-                                <div class="text-[11px] text-slate-400 font-medium mb-3">{{ $app->user->email }}</div>
-                                
-                                {{-- KUMPULAN TOMBOL --}}
-                                <div class="flex gap-2 mt-2">
+                                <div class="flex items-start gap-2.5">
+                                    {{-- Indikator Visual (Titik Biru) untuk CV yang Belum Dilihat --}}
+                                    @if(!$app->cv_viewed_at)
+                                        <div class="mt-1.5 w-2 h-2 rounded-full bg-blue-600 flex-shrink-0 shadow-sm shadow-blue-300"></div>
+                                    @endif
                                     
-                                    {{-- TOMBOL ALASAN MELAMAR --}}
-                                   <button onclick="openModal('modal-{{ $app->id }}')" class="text-[10px] bg-blue-50 hover:bg-slate-300 border border-slate-300 text-slate-800 font-black py-1.5 px-3 rounded-lg flex items-center gap-1.5 transition uppercase tracking-widest shadow-sm">
+                                    <div>
+                                        {{-- Penyesuaian Ketebalan Tipografi Berdasarkan Status --}}
+                                        <a href="{{ route('admin.applications.show', $app->id) }}" class="{{ $app->cv_viewed_at ? 'font-bold text-slate-600' : 'font-black text-blue-900 text-[15px]' }} hover:text-blue-700 hover:underline transition block">
+                                            {{ $app->user->name }}
+                                        </a>
+                                        <div class="text-[11px] {{ $app->cv_viewed_at ? 'text-slate-400' : 'text-slate-500 font-bold' }} mb-3">
+                                            {{ $app->user->email }}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {{-- Grup Tombol Aksi (Alasan & Preview CV) --}}
+                                <div class="flex items-center gap-2 mt-2">
+                                    <button onclick="openModal('modal-{{ $app->id }}')" class="text-[10px] bg-blue-50 hover:bg-slate-300 border border-slate-300 text-slate-800 font-black py-1.5 px-3 rounded-lg flex items-center gap-1.5 transition uppercase tracking-widest shadow-sm">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                                        Alasan Melamar
+                                        Alasan
                                     </button>
 
-                                    {{-- TOMBOL BUKA CV --}}
                                     @if($app->user?->cv?->file_cv) 
-                                        <a href="{{ asset('uploads/cv/' . $app->user->cv->file_cv) }}" target="_blank" class="text-[10px] bg-blue-50 hover:bg-blue-100 border border-blue-100 text-blue-700 font-black py-1.5 px-3 rounded-lg flex items-center gap-1 transition uppercase tracking-widest">
-                                            BUKA CV
-                                        </a>
+                                        <div class="flex flex-col gap-1">
+                                            <a href="{{ route('admin.applications.preview_cv', $app->id) }}" target="_blank" class="text-[10px] bg-blue-50 hover:bg-blue-100 border border-blue-100 text-blue-700 font-black py-1.5 px-3 rounded-lg flex items-center justify-center gap-1 transition uppercase tracking-widest">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.774 5.334-5.565 8-9.542 8-3.977 0-7.768-2.666-9.542-7z" /></svg>
+                                                Preview CV
+                                            </a>
+
+                                            {{-- Label Waktu Peninjauan CV --}}
+                                            @if($app->cv_viewed_at)
+                                                <span class="text-[9px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded text-center border border-emerald-100">
+                                                    ✓ Dilihat: {{ \Carbon\Carbon::parse($app->cv_viewed_at)->format('d M | H:i') }}
+                                                </span>
+                                            @else
+                                                <span class="text-[9px] text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded text-center border border-amber-100">
+                                                    ● Belum Dilihat
+                                                </span>
+                                            @endif
+                                        </div>
                                     @else
-                                        <button disabled class="text-[10px] bg-gray-50 text-gray-400 border border-gray-100 font-black py-1.5 px-3 rounded-lg flex items-center gap-1 uppercase tracking-widest cursor-not-allowed" title="Pelamar belum upload CV">
+                                        <button disabled class="text-[10px] bg-gray-50 text-gray-400 border border-gray-100 font-black py-1.5 px-3 rounded-lg flex items-center gap-1 uppercase tracking-widest cursor-not-allowed" title="Pelamar belum mengunggah CV">
                                             NO CV
                                         </button>
                                     @endif
-                                    
                                 </div>
                             </td>
 
-                          {{-- 2. Posisi & Tanggal Lamar --}}
+                            {{-- 2. Kolom Posisi Pekerjaan dan Tanggal Melamar --}}
                             <td class="px-8 py-6 whitespace-nowrap">
                                 <span class="text-sm font-bold text-blue-900 block truncate max-w-[200px]" title="{{ $app->lowongan->title }}">{{ $app->lowongan->title }}</span>
                                 <span class="text-[10px] text-slate-400 font-bold uppercase tracking-tight">
                                     Diterima: {{ $app->created_at->format('d M Y | H:i') }}
                                 </span>
                                 
-                                {{-- ========================================================= --}}
-                                {{-- LABEL KHUSUS JOBFAIR --}}
-                                {{-- ========================================================= --}}
+                                {{-- Penanda Khusus Sumber Referensi (Jobfair/Event) --}}
                                 @if(isset($app->source) && $app->source !== 'website')
                                     <div class="mt-2">
                                         <span class="bg-yellow-300 text-yellow-900 text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-[0.1em] shadow-sm inline-flex items-center gap-1">
@@ -140,7 +163,7 @@
                                 @endif
                             </td>
 
-                            {{-- 3. Ekspektasi Gaji --}}
+                            {{-- 3. Kolom Ekspektasi Gaji dan Kesiapan Relokasi --}}
                             <td class="px-8 py-6 whitespace-nowrap">
                                 @if($app->expected_salary == 0 || is_null($app->expected_salary))
                                     <div class="text-[11px] font-black text-gray-500 uppercase tracking-widest bg-gray-100 inline-block px-2 py-1 rounded">Negosiasi</div>
@@ -157,7 +180,7 @@
                                 </div>
                             </td>
 
-                            {{-- 4. Status Tahapan --}}
+                            {{-- 4. Kolom Status Tahapan Berjalan --}}
                             <td class="px-8 py-6 text-center">
                                 @php
                                     $statusClasses = [
@@ -188,7 +211,7 @@
                                 </span>
                             </td>
 
-                            {{-- 5. Update Tahap --}}
+                            {{-- 5. Kolom Pembaruan Tahapan --}}
                             <td class="px-8 py-6 whitespace-nowrap">
                                 <form action="{{ route('admin.applications.update', $app->id) }}" method="POST">
                                     @csrf
@@ -208,7 +231,7 @@
                             </td>
                         </tr>
 
-                        {{-- MODAL ALASAN --}}
+                        {{-- Jendela Modal untuk Detail Motivasi Pelamar --}}
                         <div id="modal-{{ $app->id }}" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
                             <div class="bg-white rounded-[2rem] max-w-lg w-full p-10 shadow-2xl border border-gray-100">
                                 <div class="flex justify-between items-center mb-8">
@@ -241,35 +264,26 @@
                 </table>
             </div>
             
+            {{-- Pesan Data Kosong --}}
             @if($applications->isEmpty())
                 <div class="py-24 text-center">
                     <div class="text-slate-300 mb-3">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </div>
-                    <p class="text-slate-400 font-bold">Tidak ada data pelamar yang sesuai dengan pencarian atau filter kamu.</p>
+                    <p class="text-slate-400 font-bold">Tidak ada data pelamar yang sesuai dengan pencarian atau filter Anda.</p>
                 </div>
             @endif
         </div>
-        @if($applications->isEmpty())
-                <div class="py-24 text-center">
-                    <div class="text-slate-300 mb-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    </div>
-                    <p class="text-slate-400 font-bold">Tidak ada data pelamar yang sesuai dengan pencarian atau filter kamu.</p>
-                </div>
-            @endif
-        </div> {{-- BATAS AKHIR KOTAK PUTIH TABEL --}}
 
-        {{-- penambahan pagenation di sini --}}
+        {{-- Navigasi Halaman (Pagination) --}}
         <div class="mt-8">
             {{ $applications->links() }}
         </div>
 
-    </div> {{-- BATAS AKHIR max-w-screen-xl --}}
-</div> {{-- BATAS AKHIR pt-32 pb-20 --}}
     </div>
 </div>
 
+{{-- Skrip Pengendali Modal --}}
 <script>
     function openModal(id) {
         document.getElementById(id).classList.remove('hidden');

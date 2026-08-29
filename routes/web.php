@@ -95,6 +95,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/applications', [AdminController::class, 'indexApplications'])->name('admin.applications.index');
         Route::get('/seleksi/detail/{id}', [AdminController::class, 'showApplication'])->name('admin.applications.show');
         Route::patch('/applications/{id}/update', [AdminController::class, 'updateApplicationStatus'])->name('admin.applications.update');
+        // TAMBAHAN: Rute Preview & Tracking CV Dilihat
+        Route::get('/applications/{id}/preview-cv', [AdminController::class, 'previewCv'])->name('admin.applications.preview_cv');
 
         // Master Data
         Route::prefix('master')->name('admin.master.')->group(function() {
