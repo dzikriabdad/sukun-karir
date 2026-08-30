@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema; // Tambahan untuk cek kolom
 
 class AdminController extends Controller
 {
@@ -122,7 +123,7 @@ class AdminController extends Controller
         $lowongan->requirements        = $request->persyaratan; 
         $lowongan->location            = $request->penempatan; 
         $lowongan->start_date          = $request->start_date;
-        $lowongan->deadline            = $request->end_date;  
+        $lowongan->deadline            = $request->end_date;   
         $lowongan->status              = $request->status;
         $lowongan->is_relocation_asked = $request->is_relocation_asked; 
 
@@ -163,6 +164,13 @@ class AdminController extends Controller
     // ==========================================
     public function indexApplications(Request $request)
     {
+        // Jaga-jaga: otomatis buat kolom cv_viewed_at jika belum ada di database
+        if (!Schema::hasColumn('applications', 'cv_viewed_at')) {
+            Schema::table('applications', function ($table) {
+                $table->timestamp('cv_viewed_at')->nullable()->after('status');
+            });
+        }
+
         $lowongans = Lowongan::all(); 
         $query = Application::with(['user', 'lowongan']);
 
@@ -180,7 +188,6 @@ class AdminController extends Controller
             });
         }
 
-        // penambahan pagination agar tidak terlalu banyak data yang ditampilkan sekaligus
         $applications = $query->latest()->paginate(10)->withQueryString();
         
         return view('admin.applications.index', compact('applications', 'lowongans'));
@@ -190,10 +197,10 @@ class AdminController extends Controller
     {
         $application = Application::with(['user.cv', 'lowongan'])->findOrFail($id);
         $history = Application::where('user_id', $application->user_id)
-                                ->where('id', '!=', $id)
-                                ->with('lowongan')
-                                ->latest()
-                                ->get();
+                                    ->where('id', '!=', $id)
+                                    ->with('lowongan')
+                                    ->latest()
+                                    ->get();
         
         return view('admin.applications.show', compact('application', 'history'));
     }
@@ -205,6 +212,32 @@ class AdminController extends Controller
         $application->update(['status' => $request->status]);
         
         return back()->with('success', 'Tahapan seleksi pelamar berhasil diperbarui!');
+    }
+
+    // ==========================================
+    // FITUR BARU: PREVIEW CV & TANDAI SUDAH DILIHAT
+    // ==========================================
+    public function previewCv($id)
+    {
+        $application = Application::with('user.cv')->findOrFail($id);
+        
+        // Catat waktu pertama kali CV dibuka oleh HRD
+        if (!$application->cv_viewed_at) {
+            $application->update(['cv_viewed_at' => now()]);
+        }
+
+        if (!$application->user?->cv?->file_cv) {
+            return back()->with('error', 'Pelamar belum mengunggah file CV.');
+        }
+
+        $filePath = public_path('uploads/cv/' . $application->user->cv->file_cv);
+        
+        if (!file_exists($filePath)) {
+            return back()->with('error', 'File PDF CV tidak ditemukan di server.');
+        }
+
+        // Tampilkan file langsung di browser (Preview PDF)
+        return response()->file($filePath);
     }
     
     // ==========================================
@@ -223,7 +256,7 @@ class AdminController extends Controller
 
         Category::create([
             'name' => $request->name,
-            'slug' => Str::slug($request->name), // Otomatis bikin slug
+            'slug' => Str::slug($request->name), 
         ]);
 
         return back()->with('success', 'Kategori berhasil ditambahkan!');
@@ -233,10 +266,8 @@ class AdminController extends Controller
     {
         $request->validate(['name' => 'required|string|max:100']);
 
-        // JAGA-JAGA: Kalau tabel Experience juga butuh slug, tambahin di sini Bos!
         Experience::create([
             'name' => $request->name,
-            // 'slug' => Str::slug($request->name), // Buka comment ini kalau di DB ada kolom slug
         ]);
 
         return back()->with('success', 'Level pengalaman baru berhasil ditambahkan!');

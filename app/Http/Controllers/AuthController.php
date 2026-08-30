@@ -28,13 +28,32 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             // Cek jika yang login ternyata Admin
             if (Auth::user()->role === 'admin') {
-                Auth::logout(); // Gagalkan login di pintu ini
+                Auth::logout();
                 return back()->withErrors([
                     'email' => 'Akun Admin terdeteksi. Silakan login melalui halaman khusus Admin.'
                 ]);
             }
 
             $request->session()->regenerate();
+
+            // ====================================================================
+            // KONDISI 1: PELAMAR SUDAH PUNYA AKUN DAN LOGIN
+            // ====================================================================
+            if (session()->has('redirect_setelah_login')) {
+                $urlTujuan = session('redirect_setelah_login');
+                
+                // Jika belum mengisi CV, arahkan ke buat CV
+                if (!Auth::user()->cv) {
+                    return redirect()->route('pelamar.create_cv')
+                                     ->with('info', 'Hampir selesai! Silakan lengkapi CV Anda terlebih dahulu.');
+                }
+
+                // Jika CV sudah lengkap, arahkan langsung ke halaman lamaran
+                session()->forget('redirect_setelah_login');
+                return redirect($urlTujuan);
+            }
+            // ====================================================================
+
             return redirect()->intended('/');
         }
 
@@ -58,9 +77,8 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
-            // Cek jika yang login ternyata bukan Admin
             if (Auth::user()->role !== 'admin') {
-                Auth::logout(); // Gagalkan login di pintu ini
+                Auth::logout();
                 return back()->withErrors([
                     'email' => 'Akses ditolak. Halaman ini hanya untuk akun Admin.'
                 ]);
@@ -106,10 +124,20 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'pelamar', // Default pendaftaran adalah pelamar
+            'role' => 'pelamar',
         ]);
 
         Auth::login($user);
+
+        // ====================================================================
+        // KONDISI 2: PELAMAR BARU MENDAFTAR DARI LINK KHUSUS/JOBFAIR
+        // ====================================================================
+        if (session()->has('redirect_setelah_login')) {
+            // Karena user baru pasti belum punya CV, arahkan ke pengisian CV
+            return redirect()->route('pelamar.create_cv')
+                             ->with('info', 'Akun berhasil dibuat! Silakan isi CV Anda untuk melanjutkan pendaftaran.');
+        }
+
         return redirect()->route('pelamar.create_cv');
     }
 }

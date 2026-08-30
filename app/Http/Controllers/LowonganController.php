@@ -10,26 +10,38 @@ use Carbon\Carbon;
 
 class LowonganController extends Controller
 {
-    public function index() 
+    public function index(Request $request) 
     {
-        // 1. Ambil 3 lowongan terbaru untuk ditampilkan di beranda
+        // =========================================================================
+        // SOURCE DARI HALAMAN UTAMA (GENERAL LINK JOBFAIR)
+        // =========================================================================
+        if ($request->has('source')) {
+            session(['sumber_lamaran' => $request->query('source')]);
+            session()->save(); // Paksa simpan ke session
+        }
+        // =========================================================================
+
         $lowongans = Lowongan::with('category')
             ->where('status', 'aktif') 
             ->whereDate('deadline', '>=', Carbon::today()) 
             ->latest()                
-            ->take(3)                  
+            ->take(3)                 
             ->get();
 
-        // 2. Ambil data master buat ngisi dropdown pencarian
         $categories = \App\Models\Category::all();
         $experiences = \App\Models\Experience::all();
 
-        // 3. Lempar datanya ke view welcome
         return view('welcome', compact('lowongans', 'categories', 'experiences'));
     }
 
     public function allCareers(Request $request)
     {
+        // Tangkap juga source kalau mereka langsung mendarat di halaman list karir
+        if ($request->has('source')) {
+            session(['sumber_lamaran' => $request->query('source')]);
+            session()->save();
+        }
+
         $query = Lowongan::with('category')
             ->where('status', 'aktif') 
             ->whereDate('deadline', '>=', Carbon::today());
@@ -49,26 +61,27 @@ class LowonganController extends Controller
         $lowongans = $query->latest()->paginate(6);            
         $lowongans->appends($request->all());
 
-        // Ambil data master buat dropdown filter
         $categories = \App\Models\Category::all();
         $experiences = \App\Models\Experience::all();
 
         return view('careers', compact('lowongans', 'categories', 'experiences'));
     }
 
-    public function show($slug)
+    public function show(Request $request, $slug)
     {
-        // =========================================================================
-        // LOGIKA BARU: Cuma cari berdasarkan SLUG (Tanpa filter aktif/deadline)
-        // Biar kalau loker ditutup, halamannya tetep kebuka dan gak 404 Not Found
-        // =========================================================================
+        // 1. Ambil data lowongan dulu
         $lowongan = Lowongan::with('category')
             ->where('slug', $slug)
             ->firstOrFail();
 
-        // =========================================================================
-        // LOGIKA CEK STATUS PELAMAR
-        // =========================================================================
+        // 2. Tangkap parameter 'source' jika ada di URL dan simpan lokasi tujuannya
+        if ($request->has('source')) {
+            session(['sumber_lamaran' => $request->query('source')]);
+            session(['redirect_setelah_login' => route('pelamar.apply', $lowongan->id)]);
+            session()->save(); // Paksa simpan data ke session
+        }
+
+        // 3. Cek status lamaran aktif pelamar
         $hasActiveApplication = false;
         $isRejected = false; 
         
@@ -78,7 +91,6 @@ class LowonganController extends Controller
                 ->first();
 
             if ($lamaran) {
-                // Cek apakah lamaran ditolak
                 if ($lamaran->status === 'rejected' || $lamaran->status === 'Tolak Lamaran') {
                     $isRejected = true; 
                 } else {
@@ -87,12 +99,9 @@ class LowonganController extends Controller
             }
         }
         
-        // =========================================================================
-        // CEK APAKAH LOWONGAN SUDAH DITUTUP (Buat ngatur tombol di View)
-        // =========================================================================
+        // 4. Cek tenggat waktu lowongan
         $isClosed = $lowongan->status !== 'aktif' || Carbon::parse($lowongan->deadline)->isBefore(Carbon::today());
 
-        // Cek darimana request berasal (Halaman Pelamar atau Publik)
         if (request()->is('dashboard/*') || request()->is('lowongan/*')) {
             return view('pelamar.show_loker', compact('lowongan', 'hasActiveApplication', 'isRejected', 'isClosed'));
         }
